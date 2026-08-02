@@ -1,0 +1,2512 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>SENTINELA · plataforma de investimento</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0b0b0b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="icon-192.png">
+
+  <!-- Fontes e ícones -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <style>
+    /* ========== RESET & BASE ========== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0b0b0b;
+      color: #f0f0f0;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      user-select: none;
+    }
+
+    /* ========== FUNDO ========== */
+    .bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      background: radial-gradient(circle at 30% 40%, #1a1a1a 0%, #050505 90%);
+      overflow: hidden;
+    }
+    .bg-canvas::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: 
+        repeating-linear-gradient(45deg, rgba(180, 20, 20, 0.02) 0px, rgba(180, 20, 20, 0.02) 2px, transparent 2px, transparent 12px),
+        repeating-linear-gradient(-45deg, rgba(180, 20, 20, 0.02) 0px, rgba(180, 20, 20, 0.02) 2px, transparent 2px, transparent 12px);
+      pointer-events: none;
+    }
+
+    .glow-line {
+      position: absolute;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(200, 30, 30, 0.3), rgba(200, 30, 30, 0.6), rgba(200, 30, 30, 0.3), transparent);
+      filter: blur(2px);
+      animation: driftLine 12s infinite alternate ease-in-out;
+      width: 60%;
+      left: 20%;
+      opacity: 0.4;
+    }
+    .glow-line:nth-child(1) { top: 15%; animation-duration: 14s; }
+    .glow-line:nth-child(2) { top: 45%; animation-duration: 18s; animation-delay: -4s; width: 40%; left: 30%; }
+    .glow-line:nth-child(3) { top: 70%; animation-duration: 16s; animation-delay: -8s; width: 70%; left: 15%; }
+    @keyframes driftLine {
+      0% { transform: translateX(-10%) scaleX(0.8); opacity: 0.2; }
+      100% { transform: translateX(10%) scaleX(1.2); opacity: 0.6; }
+    }
+
+    .chart-svg {
+      position: absolute;
+      bottom: 10%;
+      right: 5%;
+      width: 320px;
+      height: 120px;
+      opacity: 0.2;
+      z-index: 1;
+    }
+    .chart-svg svg { width: 100%; height: 100%; }
+    @media (max-width: 768px) {
+      .chart-svg { width: 200px; height: 80px; bottom: 5%; right: 2%; }
+    }
+
+    /* ========== APP CONTAINER ========== */
+    .app {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      height: 100vh;
+      max-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ========== SPLASH SCREEN ========== */
+    .splash-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      background: #0b0b0b;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      transition: opacity 0.8s ease, transform 0.8s ease;
+      opacity: 1;
+      transform: scale(1);
+    }
+    .splash-screen.hidden {
+      opacity: 0;
+      transform: scale(1.05);
+      pointer-events: none;
+    }
+    .splash-screen .logo {
+      font-size: 4rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #f0f0f0 0%, #b31b1b 70%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.03em;
+    }
+    .splash-screen .sub {
+      color: #888;
+      font-size: 1rem;
+      letter-spacing: 0.1em;
+      animation: pulseText 1.5s ease-in-out infinite;
+    }
+    @keyframes pulseText {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+    .splash-screen .loader {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(179,27,27,0.2);
+      border-top-color: #b31b1b;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ========== TELA DE LOGIN ========== */
+    .login-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 100;
+      background: rgba(5,5,5,0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .login-screen.hidden {
+      opacity: 0;
+      transform: scale(1.05);
+      pointer-events: none;
+    }
+
+    /* ===== LOGIN BOX ===== */
+    .login-box {
+      background: rgba(20, 20, 20, 0.7);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 2.5rem;
+      padding: 2.5rem 2rem;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 25px 50px -8px rgba(0,0,0,0.9);
+      animation: slideUpFade 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+      transition: all 0.4s ease;
+    }
+    .login-box .logo {
+      text-align: center;
+      font-size: 2.8rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #f0f0f0 0%, #b31b1b 70%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1.5rem;
+    }
+    .login-box .sub {
+      color: #aaa;
+      font-size: 0.95rem;
+      margin-bottom: 1.8rem;
+      border-left: 3px solid #b31b1b;
+      padding-left: 1rem;
+      animation: fadeIn 1s ease 0.2s both;
+    }
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+    .login-form label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #ccc;
+      letter-spacing: 0.02em;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+    .login-form .input-group {
+      position: relative;
+    }
+    .login-form .input-group i {
+      position: absolute;
+      left: 1.2rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #555;
+      font-size: 1rem;
+      transition: color 0.2s;
+    }
+    .login-form .input-group input {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 2rem;
+      padding: 0.9rem 1.5rem 0.9rem 3rem;
+      font-size: 1rem;
+      color: #fff;
+      outline: none;
+      transition: 0.2s;
+      width: 100%;
+    }
+    .login-form .input-group input:focus {
+      border-color: #b31b1b;
+      background: rgba(255,255,255,0.07);
+    }
+    .login-form .input-group input:focus + i,
+    .login-form .input-group input:focus ~ i {
+      color: #b31b1b;
+    }
+    .login-form .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin-top: 0.5rem;
+    }
+
+    /* ===== REGISTER BOX ===== */
+    .register-box {
+      background: rgba(20, 20, 20, 0.7);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 2.5rem;
+      padding: 2.5rem 2rem;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 25px 50px -8px rgba(0,0,0,0.9);
+      animation: slideUpFade 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+      display: none;
+      transition: all 0.4s ease;
+    }
+    .register-box.active {
+      display: block;
+    }
+    .register-box .logo {
+      text-align: center;
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #f0f0f0 0%, #b31b1b 70%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+    .register-box .sub {
+      color: #aaa;
+      font-size: 0.9rem;
+      text-align: center;
+      margin-bottom: 1.8rem;
+    }
+    .register-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+    .register-form label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #ccc;
+      letter-spacing: 0.02em;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+    .register-form .input-group {
+      position: relative;
+    }
+    .register-form .input-group i {
+      position: absolute;
+      left: 1.2rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #555;
+      font-size: 1rem;
+      transition: color 0.2s;
+    }
+    .register-form .input-group input {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 2rem;
+      padding: 0.9rem 1.5rem 0.9rem 3rem;
+      font-size: 1rem;
+      color: #fff;
+      outline: none;
+      transition: 0.2s;
+      width: 100%;
+    }
+    .register-form .input-group input:focus {
+      border-color: #b31b1b;
+      background: rgba(255,255,255,0.07);
+    }
+    .register-form .input-group input:focus + i,
+    .register-form .input-group input:focus ~ i {
+      color: #b31b1b;
+    }
+    .register-form .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin-top: 0.5rem;
+    }
+
+    .register-success {
+      display: none;
+      text-align: center;
+      padding: 1.5rem 0;
+      animation: fadeIn 0.6s ease;
+    }
+    .register-success.active {
+      display: block;
+    }
+    .register-success .icon {
+      font-size: 4rem;
+      color: #4caf50;
+      margin-bottom: 1rem;
+    }
+    .register-success .title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #fff;
+    }
+    .register-success .desc {
+      color: #aaa;
+      margin-top: 0.5rem;
+      line-height: 1.6;
+    }
+
+    @keyframes slideUpFade {
+      0% { opacity: 0; transform: translateY(30px) scale(0.96); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    /* ========== LOADING OVERLAY ========== */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(5,5,5,0.94);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      padding: 2rem;
+    }
+    .loading-overlay.active {
+      display: flex;
+      animation: fadeIn 0.4s ease;
+    }
+    .loading-content {
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+    .loading-aviao {
+      font-size: 4.5rem;
+      margin-bottom: 0.5rem;
+      display: inline-block;
+      filter: drop-shadow(0 0 20px rgba(179,27,27,0.3));
+      animation: voo 2.4s ease-in-out infinite alternate;
+    }
+    @keyframes voo {
+      0% { transform: translateY(0) rotate(-6deg) scale(1); }
+      100% { transform: translateY(-60px) rotate(8deg) scale(1.12); }
+    }
+    .loading-progress {
+      width: 100%;
+      height: 6px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 1.5rem 0;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+    }
+    .loading-progress .bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #b31b1b, #e04040);
+      border-radius: 10px;
+      transition: width 0.3s ease;
+      box-shadow: 0 0 12px rgba(179,27,27,0.5);
+    }
+    .loading-message {
+      font-size: 1.2rem;
+      color: #ddd;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      min-height: 2.5rem;
+    }
+
+    .loading-charts {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      overflow: hidden;
+      opacity: 0.25;
+      pointer-events: none;
+    }
+    .loading-charts svg {
+      width: 100%;
+      height: 100%;
+    }
+    .loading-charts .line-up {
+      animation: chartRise 3s ease-in-out infinite alternate;
+    }
+    @keyframes chartRise {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-8px); }
+    }
+    .loading-charts .bar-up {
+      animation: barGrow 2.8s ease-in-out infinite alternate;
+      transform-origin: bottom;
+    }
+    @keyframes barGrow {
+      0% { transform: scaleY(0.6); }
+      100% { transform: scaleY(1); }
+    }
+
+    /* ========== DASHBOARD ========== */
+    .dashboard {
+      display: none;
+      flex-direction: column;
+      height: 100vh;
+      width: 100%;
+      animation: fadeUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .dashboard.active {
+      display: flex;
+    }
+    @keyframes fadeUp {
+      0% { opacity: 0; transform: translateY(20px) scale(0.98); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* ========== APP BAR ========== */
+    .app-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.8rem 1.5rem;
+      background: rgba(11,11,11,0.8);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      flex-shrink: 0;
+      min-height: 60px;
+      z-index: 30;
+    }
+    .app-bar .left {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .app-bar .left .menu-btn {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.2rem;
+      transition: color 0.2s;
+    }
+    .app-bar .left .menu-btn:hover {
+      color: #b31b1b;
+    }
+    .app-bar .title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: -0.02em;
+    }
+    .app-bar .right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .app-bar .right .icon-btn {
+      background: transparent;
+      border: none;
+      color: #ccc;
+      font-size: 1.3rem;
+      cursor: pointer;
+      position: relative;
+      transition: color 0.2s;
+    }
+    .app-bar .right .icon-btn:hover {
+      color: #fff;
+    }
+    .app-bar .right .icon-btn .badge {
+      position: absolute;
+      top: -4px;
+      right: -6px;
+      background: #b31b1b;
+      color: #fff;
+      font-size: 0.6rem;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+
+    /* ========== MENU LATERAL ========== */
+    .menu-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 300;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      display: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .menu-overlay.active {
+      display: block;
+      opacity: 1;
+    }
+    .menu-drawer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 280px;
+      max-width: 80%;
+      height: 100%;
+      z-index: 301;
+      background: rgba(15,15,15,0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-right: 1px solid rgba(255,255,255,0.05);
+      transform: translateX(-100%);
+      transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      padding: 1.5rem 0;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .menu-drawer.open {
+      transform: translateX(0);
+    }
+    .menu-drawer .menu-header {
+      padding: 0 1.5rem 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      margin-bottom: 1rem;
+    }
+    .menu-drawer .menu-header .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #f0f0f0 0%, #b31b1b 70%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .menu-drawer .menu-header .user {
+      color: #aaa;
+      font-size: 0.85rem;
+      margin-top: 0.3rem;
+    }
+    .menu-drawer .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.9rem 1.5rem;
+      color: #ccc;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+      font-family: inherit;
+      font-size: 0.95rem;
+    }
+    .menu-drawer .menu-item:hover {
+      background: rgba(179,27,27,0.1);
+      color: #fff;
+    }
+    .menu-drawer .menu-item i {
+      width: 24px;
+      color: #b31b1b;
+    }
+    .menu-drawer .menu-item.logout {
+      margin-top: auto;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      color: #b31b1b;
+    }
+
+    /* ========== CONTEÚDO DAS PÁGINAS ========== */
+    .page-container {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 1rem 1.5rem 5rem;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+    .page-container::-webkit-scrollbar {
+      width: 4px;
+    }
+    .page-container::-webkit-scrollbar-thumb {
+      background: #b31b1b;
+      border-radius: 10px;
+    }
+
+    .page {
+      display: none;
+      animation: pageFade 0.35s ease;
+    }
+    .page.active {
+      display: block;
+    }
+    @keyframes pageFade {
+      0% { opacity: 0; transform: translateY(12px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ========== BOTTOM NAVIGATION ========== */
+    .bottom-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      background: rgba(11,11,11,0.9);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding: 0.4rem 0.5rem 0.6rem;
+      flex-shrink: 0;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 40;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      color: #888;
+      font-size: 0.65rem;
+      gap: 2px;
+      cursor: pointer;
+      transition: all 0.2s;
+      padding: 0.2rem 0.8rem;
+      flex: 1;
+      position: relative;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .nav-item i {
+      font-size: 1.4rem;
+      transition: transform 0.2s;
+    }
+    .nav-item span {
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+    .nav-item.active {
+      color: #b31b1b;
+    }
+    .nav-item.active i {
+      transform: scale(1.1);
+    }
+    .nav-item:active {
+      transform: scale(0.92);
+    }
+
+    /* ========== ESTILOS DOS CARDS ========== */
+    .card {
+      background: rgba(20,20,20,0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 2rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 10px 30px -12px rgba(0,0,0,0.7);
+      transition: all 0.3s;
+    }
+    .card:hover {
+      border-color: rgba(179,27,27,0.2);
+    }
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #eee;
+      margin-bottom: 0.8rem;
+    }
+    .card-sub {
+      font-size: 0.85rem;
+      color: #aaa;
+      margin-bottom: 0.5rem;
+    }
+
+    /* ========== DASHBOARD CARDS ========== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .stat-card {
+      background: rgba(20,20,20,0.5);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 1.5rem;
+      padding: 1.2rem 1rem;
+      text-align: center;
+      transition: transform 0.2s;
+    }
+    .stat-card:hover {
+      transform: translateY(-4px);
+    }
+    .stat-card .label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: #888;
+      letter-spacing: 0.06em;
+    }
+    .stat-card .value {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #f0f0f0;
+      margin-top: 0.3rem;
+    }
+    .stat-card .value.green { color: #4caf50; }
+    .stat-card .value.red { color: #b31b1b; }
+    .stat-card .value.gold { color: #ffd700; }
+
+    .chart-container {
+      background: rgba(20,20,20,0.4);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 1.5rem;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      height: 200px;
+    }
+    .chart-container canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    /* ========== PÁGINA INÍCIO (HOME) ========== */
+    .hero-home {
+      text-align: center;
+      padding: 0.5rem 0;
+    }
+    .hero-home h1 {
+      font-size: clamp(2.2rem, 10vw, 3.8rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #f0f0f0 0%, #b31b1b 70%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.3rem;
+    }
+    .hero-home .sub {
+      color: #bbb;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      font-weight: 400;
+    }
+    .hero-home p {
+      color: #b0b0b0;
+      font-size: 0.95rem;
+      line-height: 1.7;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+    .btn-investir-home {
+      margin-top: 1.5rem;
+      background: #b31b1b;
+      border: none;
+      padding: 0.9rem 2.5rem;
+      border-radius: 3rem;
+      font-weight: 600;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 8px 20px -6px rgba(179,27,27,0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .btn-investir-home:hover {
+      background: #9e1717;
+      transform: scale(1.02);
+    }
+    .btn-investir-home:active {
+      transform: scale(0.96);
+    }
+
+    /* ========== PÁGINA INVESTIMENTOS ========== */
+    .cards-invest-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .card-invest-app {
+      background: rgba(20,20,20,0.5);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 2rem;
+      padding: 1.8rem 1rem;
+      text-align: center;
+      transition: all 0.25s;
+      cursor: pointer;
+      box-shadow: 0 10px 30px -12px rgba(0,0,0,0.7);
+      color: #fff;
+    }
+    .card-invest-app:hover {
+      transform: translateY(-4px);
+      border-color: rgba(179,27,27,0.3);
+      background: rgba(30,30,30,0.7);
+    }
+    .card-invest-app:active {
+      transform: scale(0.96);
+    }
+    .card-invest-app .icon {
+      font-size: 3rem;
+    }
+    .card-invest-app .name {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0.2rem 0;
+    }
+    .card-invest-app .badge {
+      font-size: 0.7rem;
+      background: rgba(179,27,27,0.15);
+      color: #e0a0a0;
+      padding: 0.2rem 1rem;
+      border-radius: 2rem;
+      border: 1px solid rgba(179,27,27,0.2);
+      display: inline-block;
+    }
+    @media (max-width: 480px) {
+      .cards-invest-grid { grid-template-columns: 1fr; }
+    }
+
+    .calc-section-app {
+      margin-top: 1.5rem;
+      background: rgba(15,15,15,0.5);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 2rem;
+      padding: 1.5rem;
+      border: 1px solid rgba(255,255,255,0.04);
+      display: none;
+    }
+    .calc-section-app.visible {
+      display: block;
+      animation: fadeUp 0.3s ease;
+    }
+    .calc-section-app .calc-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: flex-end;
+    }
+    .calc-section-app .calc-field {
+      flex: 2 1 180px;
+    }
+    .calc-section-app .calc-field label {
+      display: block;
+      font-size: 0.8rem;
+      color: #aaa;
+      margin-bottom: 0.3rem;
+    }
+    .calc-section-app input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 10px;
+      background: linear-gradient(90deg, #b31b1b, #e04040);
+      outline: none;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+    .calc-section-app input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+      border: 2px solid #b31b1b;
+      transition: 0.15s;
+      cursor: pointer;
+    }
+    .calc-section-app input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+    .calc-section-app input[type="range"]::-moz-range-thumb {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #fff;
+      border: 2px solid #b31b1b;
+      cursor: pointer;
+    }
+    .calc-result-app {
+      flex: 3 1 280px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.8rem;
+      background: rgba(0,0,0,0.3);
+      padding: 0.8rem 1rem;
+      border-radius: 1.5rem;
+      border: 1px solid rgba(255,255,255,0.03);
+    }
+    .calc-result-app .item {
+      text-align: center;
+    }
+    .calc-result-app .item .label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      color: #888;
+      letter-spacing: 0.06em;
+    }
+    .calc-result-app .item .value {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #f0f0f0;
+      margin-top: 0.1rem;
+    }
+    .calc-result-app .item .value.highlight {
+      color: #d4a0a0;
+    }
+    .btn-confirm-app {
+      margin-top: 1.2rem;
+      background: #b31b1b;
+      border: none;
+      padding: 0.8rem 2rem;
+      border-radius: 3rem;
+      font-weight: 600;
+      color: #fff;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 8px 20px -6px rgba(179,27,27,0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .btn-confirm-app:hover {
+      background: #9e1717;
+      transform: scale(1.02);
+    }
+    .btn-confirm-app:active {
+      transform: scale(0.96);
+    }
+    .btn-confirm-app:disabled {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .payment-data-app {
+      background: rgba(0,0,0,0.3);
+      border-radius: 1.5rem;
+      padding: 1.2rem 1.5rem;
+      margin: 1rem 0;
+      border-left: 4px solid #b31b1b;
+      display: none;
+    }
+    .payment-data-app.visible {
+      display: block;
+      animation: fadeUp 0.3s ease;
+    }
+    .payment-data-app .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1.5rem;
+      margin: 0.3rem 0;
+    }
+    .payment-data-app .row .label {
+      color: #aaa;
+      font-weight: 400;
+      min-width: 80px;
+    }
+    .payment-data-app .row .value {
+      font-weight: 500;
+      color: #fff;
+    }
+    .payment-data-app .row .value.highlight {
+      color: #d4a0a0;
+    }
+    .payment-actions-app {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    .btn-whatsapp-app {
+      background: #25D366;
+      color: #fff;
+      border: none;
+      padding: 0.7rem 1.8rem;
+      border-radius: 3rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 8px 20px -6px rgba(37,211,102,0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .btn-whatsapp-app:hover {
+      background: #1da85c;
+      transform: scale(1.02);
+    }
+    .btn-whatsapp-app:active {
+      transform: scale(0.96);
+    }
+    .hidden { display: none; }
+
+    /* ========== HISTÓRICO ========== */
+    .history-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.9rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .history-item .left {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+    .history-item .left .amount {
+      font-weight: 600;
+      color: #f0f0f0;
+    }
+    .history-item .left .meta {
+      font-size: 0.75rem;
+      color: #888;
+    }
+    .history-item .status {
+      font-size: 0.7rem;
+      padding: 0.2rem 0.8rem;
+      border-radius: 2rem;
+      background: rgba(76,175,80,0.15);
+      color: #4caf50;
+      border: 1px solid rgba(76,175,80,0.2);
+    }
+    .history-item .status.pending {
+      background: rgba(255,193,7,0.15);
+      color: #ffc107;
+      border-color: rgba(255,193,7,0.2);
+    }
+    .history-item .status.failed {
+      background: rgba(179,27,27,0.15);
+      color: #b31b1b;
+      border-color: rgba(179,27,27,0.2);
+    }
+
+    /* ========== CARTEIRA ========== */
+    .wallet-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .wallet-item {
+      background: rgba(20,20,20,0.4);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 1.5rem;
+      padding: 1rem;
+      text-align: center;
+    }
+    .wallet-item .label {
+      font-size: 0.7rem;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .wallet-item .value {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-top: 0.2rem;
+    }
+
+    /* ========== NOTIFICAÇÕES ========== */
+    .notif-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.8rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .notif-item .icon-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(179,27,27,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #b31b1b;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+    .notif-item .content {
+      flex: 1;
+    }
+    .notif-item .content .title {
+      font-weight: 500;
+      color: #eee;
+    }
+    .notif-item .content .desc {
+      font-size: 0.85rem;
+      color: #aaa;
+    }
+    .notif-item .time {
+      font-size: 0.7rem;
+      color: #666;
+      white-space: nowrap;
+    }
+
+    /* ========== PERFIL ========== */
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      margin-bottom: 1.5rem;
+    }
+    .profile-avatar {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #b31b1b, #6b1010);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      color: #fff;
+      font-weight: 600;
+      box-shadow: 0 8px 20px rgba(179,27,27,0.3);
+      flex-shrink: 0;
+    }
+    .profile-info {
+      flex: 1;
+    }
+    .profile-info .name {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #fff;
+    }
+    .profile-info .client-id {
+      font-size: 0.9rem;
+      color: #aaa;
+    }
+    .profile-info .level {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      margin-top: 0.3rem;
+      font-size: 0.75rem;
+      background: rgba(255,215,0,0.15);
+      color: #ffd700;
+      padding: 0.2rem 0.8rem;
+      border-radius: 2rem;
+      border: 1px solid rgba(255,215,0,0.2);
+    }
+    .profile-detail {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 0.9rem;
+    }
+    .profile-detail .label {
+      color: #aaa;
+    }
+    .profile-detail .value {
+      color: #f0f0f0;
+      font-weight: 500;
+    }
+    .profile-detail .value.verified {
+      color: #4caf50;
+    }
+
+    /* ========== FEED ========== */
+    .feed-item {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      font-size: 0.9rem;
+    }
+    .feed-item .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(179,27,27,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #b31b1b;
+      font-weight: 600;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+    }
+    .feed-item .text {
+      flex: 1;
+    }
+    .feed-item .text .highlight {
+      color: #b31b1b;
+      font-weight: 500;
+    }
+    .feed-item .time {
+      font-size: 0.7rem;
+      color: #666;
+    }
+
+    /* ========== AJUDA ========== */
+    .faq-item {
+      padding: 0.8rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .faq-item .question {
+      font-weight: 500;
+      color: #eee;
+      display: flex;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+    .faq-item .answer {
+      font-size: 0.9rem;
+      color: #aaa;
+      margin-top: 0.4rem;
+      display: none;
+    }
+    .faq-item .answer.open {
+      display: block;
+    }
+
+    .contact-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .contact-link {
+      background: rgba(20,20,20,0.5);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 1.5rem;
+      padding: 0.8rem 1.5rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: #ccc;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .contact-link:hover {
+      background: rgba(179,27,27,0.1);
+      border-color: #b31b1b;
+    }
+
+    /* ========== BOTÕES GLOBAIS ========== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.8rem 1.8rem;
+      border-radius: 3rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      flex: 1 1 auto;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+    .btn:active::after {
+      width: 300px;
+      height: 300px;
+    }
+    .btn-primary {
+      background: #b31b1b;
+      color: #fff;
+      box-shadow: 0 8px 20px -6px rgba(179,27,27,0.4);
+    }
+    .btn-primary:hover {
+      background: #9e1717;
+      transform: scale(1.02);
+    }
+    .btn-primary:active {
+      transform: scale(0.96);
+    }
+    .btn-outline {
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #ddd;
+    }
+    .btn-outline:hover {
+      background: rgba(255,255,255,0.05);
+      border-color: #b31b1b;
+    }
+    .btn-outline:active {
+      transform: scale(0.96);
+    }
+
+    .btn-create {
+      background: #b31b1b;
+      color: #fff;
+      box-shadow: 0 8px 20px -6px rgba(179,27,27,0.5);
+      border: none;
+    }
+    .btn-create:hover {
+      background: #8f1515;
+      transform: scale(1.02);
+    }
+    .btn-create:active {
+      transform: scale(0.96);
+    }
+
+    /* ========== BANNER INSTALAÇÃO PWA ========== */
+    .install-banner {
+      display: none;
+      background: rgba(20,20,20,0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 1.5rem;
+      padding: 0.8rem 1.2rem;
+      margin: 0.5rem 0 1rem;
+      border: 1px solid rgba(255,255,255,0.05);
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+    .install-banner.visible {
+      display: flex;
+    }
+    .install-banner .info {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .install-banner .info i {
+      font-size: 1.8rem;
+      color: #b31b1b;
+    }
+    .install-banner .info span {
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+    .install-banner .btn-install {
+      background: #b31b1b;
+      border: none;
+      padding: 0.5rem 1.5rem;
+      border-radius: 2rem;
+      font-weight: 600;
+      color: #fff;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .install-banner .btn-install:hover {
+      background: #9e1717;
+    }
+    .install-banner .btn-close {
+      background: transparent;
+      border: none;
+      color: #888;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    /* ========== RESPONSIVIDADE ========== */
+    @media (max-width: 600px) {
+      .login-box, .register-box { padding: 2rem 1.2rem; }
+      .app-bar { padding: 0.6rem 1rem; }
+      .page-container { padding: 0.8rem 1rem 5rem; }
+      .bottom-nav { padding: 0.2rem 0.2rem 0.4rem; }
+      .nav-item i { font-size: 1.2rem; }
+      .nav-item span { font-size: 0.55rem; }
+      .calc-result-app { grid-template-columns: 1fr; gap: 0.5rem; }
+      .profile-avatar { width: 60px; height: 60px; font-size: 2rem; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 400px) {
+      .app-bar .title { font-size: 1rem; }
+      .nav-item { padding: 0.1rem 0.2rem; }
+    }
+
+    .page-container {
+      scrollbar-width: thin;
+      scrollbar-color: #b31b1b transparent;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ========== SPLASH SCREEN ========== -->
+<div class="splash-screen" id="splashScreen">
+  <div class="logo">SENTINELA</div>
+  <div class="sub">Inicializando Inteligência Artificial...</div>
+  <div class="loader"></div>
+</div>
+
+<!-- ========== FUNDO ========== -->
+<div class="bg-canvas">
+  <div class="glow-line"></div>
+  <div class="glow-line"></div>
+  <div class="glow-line"></div>
+  <div class="chart-svg">
+    <svg viewBox="0 0 300 100" preserveAspectRatio="none">
+      <polyline points="0,80 20,70 40,85 60,60 80,75 100,40 120,55 140,30 160,50 180,20 200,35 220,10 240,25 260,15 280,5 300,10" stroke="#b31b1b" stroke-width="2" fill="none" opacity="0.3" />
+      <polyline points="0,90 30,75 50,95 70,65 90,80 110,50 130,65 150,35 170,55 190,25 210,40 230,15 250,30 270,20 290,10 300,15" stroke="#b31b1b" stroke-width="1.5" fill="none" opacity="0.2" />
+      <rect x="60" y="45" width="8" height="30" fill="#b31b1b" opacity="0.2" rx="2" />
+      <rect x="120" y="30" width="8" height="25" fill="#b31b1b" opacity="0.25" rx="2" />
+      <rect x="180" y="10" width="8" height="20" fill="#b31b1b" opacity="0.3" rx="2" />
+      <rect x="240" y="5" width="8" height="15" fill="#b31b1b" opacity="0.35" rx="2" />
+    </svg>
+  </div>
+</div>
+
+<!-- ========== APP ========== -->
+<div class="app" id="app">
+
+  <!-- ===== TELA DE LOGIN ===== -->
+  <div class="login-screen" id="loginScreen">
+    <!-- Login Box -->
+    <div class="login-box" id="loginBox">
+      <div class="logo">SENTINELA</div>
+      <div class="sub">Aceda à sua conta</div>
+      <div class="login-form">
+        <div>
+          <label>Nome completo</label>
+          <div class="input-group">
+            <input type="text" id="fullName" placeholder="Ex: Joaquim Silva" value="João Mateus">
+            <i class="fas fa-user"></i>
+          </div>
+        </div>
+        <div>
+          <label>Número de telefone</label>
+          <div class="input-group">
+            <input type="tel" id="phoneNumber" placeholder="Ex: 84 123 4567" value="84 123 4567">
+            <i class="fas fa-phone"></i>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn btn-primary" id="btnLogin"><i class="fas fa-arrow-right"></i> Entrar</button>
+          <button class="btn btn-create" id="btnCreateAccount"><i class="fas fa-user-plus"></i> Criar Conta</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Register Box -->
+    <div class="register-box" id="registerBox">
+      <div class="logo">SENTINELA</div>
+      <div class="sub">Crie a sua conta</div>
+      <div class="register-form" id="registerForm">
+        <div>
+          <label>Nome completo</label>
+          <div class="input-group">
+            <input type="text" id="regFullName" placeholder="Ex: Joaquim Silva">
+            <i class="fas fa-user"></i>
+          </div>
+        </div>
+        <div>
+          <label>Número de telefone</label>
+          <div class="input-group">
+            <input type="tel" id="regPhone" placeholder="Ex: 84 123 4567">
+            <i class="fas fa-phone"></i>
+          </div>
+        </div>
+        <div>
+          <label>Palavra-passe (opcional)</label>
+          <div class="input-group">
+            <input type="password" id="regPassword" placeholder="••••••••">
+            <i class="fas fa-lock"></i>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn btn-primary" id="btnRegister"><i class="fas fa-check"></i> Registar</button>
+          <button class="btn btn-outline" id="btnBackToLogin"><i class="fas fa-arrow-left"></i> Voltar</button>
+        </div>
+      </div>
+      <div class="register-success" id="registerSuccess">
+        <div class="icon"><i class="fas fa-check-circle"></i></div>
+        <div class="title">Conta criada com sucesso!</div>
+        <div class="desc">Seja bem-vindo à SENTINELA. Agora pode iniciar sessão utilizando os seus dados.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== LOADING OVERLAY ===== -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-charts">
+      <svg viewBox="0 0 400 200" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="gradLine" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#b31b1b" stop-opacity="0.1" />
+            <stop offset="50%" stop-color="#b31b1b" stop-opacity="0.5" />
+            <stop offset="100%" stop-color="#b31b1b" stop-opacity="0.1" />
+          </linearGradient>
+        </defs>
+        <polyline points="0,160 30,140 60,150 90,120 120,130 150,90 180,100 210,60 240,70 270,40 300,50 330,20 360,30 390,10" stroke="url(#gradLine)" stroke-width="3" fill="none" class="line-up" />
+        <polyline points="0,180 40,160 80,170 120,130 160,140 200,100 240,110 280,70 320,80 360,40 400,30" stroke="url(#gradLine)" stroke-width="2" fill="none" class="line-up" style="animation-delay:0.3s;" />
+        <rect x="50" y="120" width="12" height="40" fill="#b31b1b" opacity="0.3" rx="3" class="bar-up" style="animation-delay:0.2s;" />
+        <rect x="100" y="90" width="12" height="70" fill="#b31b1b" opacity="0.35" rx="3" class="bar-up" style="animation-delay:0.5s;" />
+        <rect x="150" y="60" width="12" height="100" fill="#b31b1b" opacity="0.4" rx="3" class="bar-up" style="animation-delay:0.8s;" />
+        <rect x="200" y="30" width="12" height="130" fill="#b31b1b" opacity="0.45" rx="3" class="bar-up" style="animation-delay:1.1s;" />
+        <rect x="250" y="100" width="12" height="60" fill="#b31b1b" opacity="0.3" rx="3" class="bar-up" style="animation-delay:0.6s;" />
+        <rect x="300" y="50" width="12" height="110" fill="#b31b1b" opacity="0.4" rx="3" class="bar-up" style="animation-delay:0.9s;" />
+        <rect x="350" y="80" width="12" height="80" fill="#b31b1b" opacity="0.35" rx="3" class="bar-up" style="animation-delay:1.3s;" />
+      </svg>
+    </div>
+    <div class="loading-content">
+      <div class="loading-aviao">✈️</div>
+      <div class="loading-progress">
+        <div class="bar" id="progressBar"></div>
+      </div>
+      <div class="loading-message" id="loadingMessage">A verificar credenciais...</div>
+    </div>
+  </div>
+
+  <!-- ===== DASHBOARD ===== -->
+  <div class="dashboard" id="dashboard">
+
+    <!-- App Bar -->
+    <div class="app-bar">
+      <div class="left">
+        <button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
+        <span class="title" id="appBarTitle">Dashboard</span>
+      </div>
+      <div class="right">
+        <button class="icon-btn" id="notifIconBtn"><i class="fas fa-bell"></i><span class="badge">3</span></button>
+        <button class="icon-btn" id="profileIconBtn"><i class="fas fa-user-circle"></i></button>
+      </div>
+    </div>
+
+    <!-- Container de páginas -->
+    <div class="page-container" id="pageContainer">
+
+      <!-- ===== PÁGINA DASHBOARD (nova) ===== -->
+      <div class="page active" id="pageDashboard">
+        <div class="stats-grid">
+          <div class="stat-card"><div class="label">Saldo disponível</div><div class="value" id="dashSaldo">0 MZN</div></div>
+          <div class="stat-card"><div class="label">Capital investido</div><div class="value" id="dashCapital">0 MZN</div></div>
+          <div class="stat-card"><div class="label">Lucro acumulado</div><div class="value green" id="dashLucro">0 MZN</div></div>
+          <div class="stat-card"><div class="label">Investimentos ativos</div><div class="value" id="dashAtivos">0</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Evolução do saldo</div>
+          <div class="chart-container"><canvas id="chartSaldo"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Atividades recentes</div>
+          <div id="feedContainer"></div>
+        </div>
+      </div>
+
+      <!-- ===== PÁGINA INÍCIO (original) ===== -->
+      <div class="page" id="pageHome">
+        <div class="hero-home">
+          <h1>Bem-vindo à SENTINELA</h1>
+          <div class="sub">Tecnologia inteligente para apoiar as suas decisões de investimento.</div>
+          <p>A SENTINELA combina tecnologia avançada com ferramentas inteligentes para auxiliar na análise de oportunidades de investimento. A nossa plataforma foi concebida para proporcionar uma experiência moderna, intuitiva e eficiente, oferecendo recursos que ajudam os utilizadores a acompanhar os mercados e a tomar decisões de forma mais informada. A equipa da SENTINELA trabalha continuamente para disponibilizar uma plataforma segura, transparente e focada na melhor experiência para os seus utilizadores.</p>
+          <button class="btn-investir-home" id="btnQueroInvestirHome"><i class="fas fa-rocket"></i> Quero Investir</button>
+        </div>
+        <div class="install-banner" id="installBanner">
+          <div class="info"><i class="fas fa-mobile-alt"></i><span>Instale a SENTINELA para uma experiência completa</span></div>
+          <div style="display:flex; gap:0.5rem; align-items:center;">
+            <button class="btn-install" id="btnInstallApp">Instalar</button>
+            <button class="btn-close" id="btnCloseBanner"><i class="fas fa-times"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PÁGINA INVESTIMENTOS ===== -->
+      <div class="page" id="pageInvest">
+        <h3 style="margin-bottom:0.5rem; font-weight:500;">Escolha o investimento</h3>
+        <div class="cards-invest-grid">
+          <div class="card-invest-app" data-opcao="aviator" id="cardAviatorApp">
+            <div class="icon">✈️</div>
+            <div class="name">Aviator</div>
+            <div class="badge">Alta volatilidade</div>
+          </div>
+          <div class="card-invest-app" data-opcao="trader" id="cardTraderApp">
+            <div class="icon">📈</div>
+            <div class="name">Trader</div>
+            <div class="badge">Análise técnica</div>
+          </div>
+        </div>
+
+        <div class="calc-section-app" id="calcSectionApp">
+          <h4 style="font-weight:500; margin-bottom:0.5rem;">📊 Simulador de retorno</h4>
+          <div class="calc-desc" style="color:#aaa; font-size:0.9rem; margin-bottom:1rem;">Selecione o valor pretendido e veja a projeção.</div>
+          <div class="calc-row">
+            <div class="calc-field">
+              <label>Valor (MZN): <span id="sliderValueLabelApp">3 000</span></label>
+              <input type="range" id="sliderValorApp" min="1000" max="10000" step="1000" value="3000">
+              <div class="slider-value" id="sliderDisplayApp">3 000 MZN</div>
+            </div>
+            <div class="calc-result-app" id="calcResultApp">
+              <div class="item"><span class="label">Investido</span><div class="value" id="valorInvestidoApp">3 000 MZN</div></div>
+              <div class="item"><span class="label">Retorno previsto</span><div class="value highlight" id="valorRetornoApp">4 500 MZN</div></div>
+              <div class="item"><span class="label">Tempo estimado</span><div class="value" id="valorTempoApp">1–2 horas</div></div>
+            </div>
+          </div>
+          <button class="btn-confirm-app" id="btnConfirmarInvestimentoApp"><i class="fas fa-check-circle"></i> Confirmar investimento</button>
+        </div>
+
+        <div class="payment-data-app" id="paymentDataApp">
+          <div style="display:flex; gap:0.8rem; align-items:center; margin-bottom:0.8rem;">
+            <i class="fas fa-credit-card" style="color:#b31b1b;"></i>
+            <span style="font-weight:500;">Dados para pagamento</span>
+          </div>
+          <div class="row"><span class="label">Número</span><span class="value highlight">877 426 441</span></div>
+          <div class="row"><span class="label">Nome</span><span class="value">EUSÉBIO DOS SANTOS</span></div>
+          <div class="payment-actions-app">
+            <button class="btn btn-primary" id="btnPagamentoEfetuadoApp"><i class="fas fa-check"></i> Já efetuei o pagamento</button>
+          </div>
+        </div>
+
+        <div id="whatsappAreaApp" class="hidden" style="margin-top:1rem; text-align:center; background:rgba(0,0,0,0.2); padding:1rem; border-radius:2rem; border:1px solid rgba(255,255,255,0.03);">
+          <p style="color:#ccc; margin-bottom:0.8rem;"><i class="fas fa-paper-plane" style="color:#25D366;"></i> Envie o comprovativo pelo WhatsApp</p>
+          <button class="btn-whatsapp-app" id="btnWhatsappApp"><i class="fab fa-whatsapp"></i> Enviar comprovativo</button>
+        </div>
+      </div>
+
+      <!-- ===== PÁGINA CARTEIRA ===== -->
+      <div class="page" id="pageWallet">
+        <h3 style="margin-bottom:1rem; font-weight:500;">Carteira</h3>
+        <div class="wallet-summary">
+          <div class="wallet-item"><div class="label">Saldo</div><div class="value" id="walletSaldo">0 MZN</div></div>
+          <div class="wallet-item"><div class="label">Investimentos</div><div class="value" id="walletInvest">0 MZN</div></div>
+          <div class="wallet-item"><div class="label">Depósitos</div><div class="value green" id="walletDepositos">0 MZN</div></div>
+          <div class="wallet-item"><div class="label">Levantamentos</div><div class="value red" id="walletLevantamentos">0 MZN</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Histórico financeiro</div>
+          <div id="walletHistory"></div>
+        </div>
+      </div>
+
+      <!-- ===== PÁGINA HISTÓRICO ===== -->
+      <div class="page" id="pageHistory">
+        <h3 style="margin-bottom:1rem; font-weight:500;">Histórico de investimentos</h3>
+        <div id="historyContainer"></div>
+      </div>
+
+      <!-- ===== PÁGINA NOTIFICAÇÕES ===== -->
+      <div class="page" id="pageNotif">
+        <h3 style="margin-bottom:1rem; font-weight:500;">Notificações</h3>
+        <div class="card" id="notifContainer"></div>
+      </div>
+
+      <!-- ===== PÁGINA PERFIL ===== -->
+      <div class="page" id="pageProfile">
+        <div class="profile-header">
+          <div class="profile-avatar" id="profileAvatar">JM</div>
+          <div class="profile-info">
+            <div class="name" id="profileName">João Mateus</div>
+            <div class="client-id" id="profileClientId">Cliente #CL-2026</div>
+            <div class="level" id="profileLevel"><i class="fas fa-star"></i> Bronze</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="profile-detail"><span class="label">Número de telefone</span><span class="value" id="profilePhone">84 123 4567</span></div>
+          <div class="profile-detail"><span class="label">Data de criação</span><span class="value" id="profileCreated">01/01/2026</span></div>
+          <div class="profile-detail"><span class="label">Estado da conta</span><span class="value verified" id="profileStatus">Ativa</span></div>
+          <div class="profile-detail"><span class="label">Conta Verificada</span><span class="value verified"><i class="fas fa-check-circle"></i> Sim</span></div>
+          <div class="profile-detail"><span class="label">Nível</span><span class="value" id="profileLevelDetail">🥉 Bronze</span></div>
+        </div>
+      </div>
+
+      <!-- ===== PÁGINA ESTATÍSTICAS ===== -->
+      <div class="page" id="pageStats">
+        <h3 style="margin-bottom:1rem; font-weight:500;">Estatísticas</h3>
+        <div class="card">
+          <div class="card-title">Evolução do saldo</div>
+          <div class="chart-container"><canvas id="chartStatsSaldo"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Evolução dos investimentos</div>
+          <div class="chart-container"><canvas id="chartStatsInvest"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Lucro acumulado mensal</div>
+          <div class="chart-container"><canvas id="chartStatsLucro"></canvas></div>
+        </div>
+      </div>
+
+      <!-- ===== PÁGINA AJUDA ===== -->
+      <div class="page" id="pageHelp">
+        <h3 style="margin-bottom:1rem; font-weight:500;">Centro de Ajuda</h3>
+        <div class="card">
+          <div class="card-title">Perguntas Frequentes</div>
+          <div class="faq-item"><div class="question" data-faq="1">Como faço um investimento? <i class="fas fa-chevron-down"></i></div><div class="answer" id="faq1">Navegue até à página de Investimentos, escolha a opção pretendida, defina o valor e confirme. Depois efetue o pagamento conforme indicado.</div></div>
+          <div class="faq-item"><div class="question" data-faq="2">Quanto tempo demora o retorno? <i class="fas fa-chevron-down"></i></div><div class="answer" id="faq2">O tempo de retorno varia conforme o investimento. Consulte a calculadora para estimativas.</div></div>
+          <div class="faq-item"><div class="question" data-faq="3">Como contacto o suporte? <i class="fas fa-chevron-down"></i></div><div class="answer" id="faq3">Utilize o WhatsApp, email ou os contactos disponíveis nesta página.</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Contactos</div>
+          <div class="contact-links">
+            <a href="https://wa.me/258877426441" target="_blank" class="contact-link"><i class="fab fa-whatsapp" style="color:#25D366;"></i> WhatsApp</a>
+            <a href="mailto:suporte@sentinelamz.com" class="contact-link"><i class="fas fa-envelope"></i> Email</a>
+            <a href="#" class="contact-link"><i class="fas fa-shield-alt"></i> Política de Privacidade</a>
+            <a href="#" class="contact-link"><i class="fas fa-file-contract"></i> Termos de Utilização</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav" id="bottomNav">
+      <button class="nav-item active" data-page="pageDashboard"><i class="fas fa-home"></i><span>Dashboard</span></button>
+      <button class="nav-item" data-page="pageInvest"><i class="fas fa-chart-pie"></i><span>Investir</span></button>
+      <button class="nav-item" data-page="pageWallet"><i class="fas fa-wallet"></i><span>Carteira</span></button>
+      <button class="nav-item" data-page="pageHistory"><i class="fas fa-clock"></i><span>Histórico</span></button>
+      <button class="nav-item" data-page="pageProfile"><i class="fas fa-user"></i><span>Perfil</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MENU LATERAL ===== -->
+<div class="menu-overlay" id="menuOverlay"></div>
+<div class="menu-drawer" id="menuDrawer">
+  <div class="menu-header">
+    <div class="logo">SENTINELA</div>
+    <div class="user" id="menuUser">João Mateus</div>
+  </div>
+  <button class="menu-item" data-page="pageDashboard"><i class="fas fa-home"></i> Dashboard</button>
+  <button class="menu-item" data-page="pageInvest"><i class="fas fa-chart-pie"></i> Investimentos</button>
+  <button class="menu-item" data-page="pageWallet"><i class="fas fa-wallet"></i> Carteira</button>
+  <button class="menu-item" data-page="pageHistory"><i class="fas fa-clock"></i> Histórico</button>
+  <button class="menu-item" data-page="pageNotif"><i class="fas fa-bell"></i> Notificações</button>
+  <button class="menu-item" data-page="pageProfile"><i class="fas fa-user"></i> Perfil</button>
+  <button class="menu-item" data-page="pageStats"><i class="fas fa-chart-bar"></i> Estatísticas</button>
+  <button class="menu-item" data-page="pageHelp"><i class="fas fa-question-circle"></i> Ajuda</button>
+  <button class="menu-item logout" id="menuLogout"><i class="fas fa-sign-out-alt"></i> Terminar Sessão</button>
+</div>
+
+<script>
+  (function() {
+    "use strict";
+
+    // ========== TABELA DE RETORNOS ==========
+    const TABLE_RETURN = [
+      { invest: 1000, retorno: 1500, tempo: '1 hora' },
+      { invest: 2000, retorno: 3000, tempo: '1 hora' },
+      { invest: 3000, retorno: 4500, tempo: '1–2 horas' },
+      { invest: 4000, retorno: 6000, tempo: '1–2 horas' },
+      { invest: 5000, retorno: 7500, tempo: '2 horas' },
+      { invest: 6000, retorno: 9000, tempo: '2–3 horas' },
+      { invest: 7000, retorno: 10500, tempo: '2–3 horas' },
+      { invest: 8000, retorno: 12000, tempo: '3 horas' },
+      { invest: 9000, retorno: 13500, tempo: '3–4 horas' },
+      { invest: 10000, retorno: 15000, tempo: '3–4 horas' }
+    ];
+
+    // ========== ELEMENTOS ==========
+    const splashScreen = document.getElementById('splashScreen');
+    const loginScreen = document.getElementById('loginScreen');
+    const loginBox = document.getElementById('loginBox');
+    const registerBox = document.getElementById('registerBox');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const progressBar = document.getElementById('progressBar');
+    const loadingMsg = document.getElementById('loadingMessage');
+    const btnLogin = document.getElementById('btnLogin');
+    const btnCreate = document.getElementById('btnCreateAccount');
+    const btnRegister = document.getElementById('btnRegister');
+    const btnBackToLogin = document.getElementById('btnBackToLogin');
+    const fullName = document.getElementById('fullName');
+    const phoneNumber = document.getElementById('phoneNumber');
+    const regFullName = document.getElementById('regFullName');
+    const regPhone = document.getElementById('regPhone');
+    const regPassword = document.getElementById('regPassword');
+    const registerForm = document.getElementById('registerForm');
+    const registerSuccess = document.getElementById('registerSuccess');
+    const dashboard = document.getElementById('dashboard');
+
+    // Bottom nav e páginas
+    const navItems = document.querySelectorAll('.nav-item');
+    const pages = {
+      dashboard: document.getElementById('pageDashboard'),
+      home: document.getElementById('pageHome'),
+      invest: document.getElementById('pageInvest'),
+      wallet: document.getElementById('pageWallet'),
+      history: document.getElementById('pageHistory'),
+      notif: document.getElementById('pageNotif'),
+      profile: document.getElementById('pageProfile'),
+      stats: document.getElementById('pageStats'),
+      help: document.getElementById('pageHelp')
+    };
+    const appBarTitle = document.getElementById('appBarTitle');
+
+    // Investimentos
+    const cardAviator = document.getElementById('cardAviatorApp');
+    const cardTrader = document.getElementById('cardTraderApp');
+    const calcSection = document.getElementById('calcSectionApp');
+    const sliderValor = document.getElementById('sliderValorApp');
+    const sliderValueLabel = document.getElementById('sliderValueLabelApp');
+    const sliderDisplay = document.getElementById('sliderDisplayApp');
+    const valorInvestido = document.getElementById('valorInvestidoApp');
+    const valorRetorno = document.getElementById('valorRetornoApp');
+    const valorTempo = document.getElementById('valorTempoApp');
+    const btnConfirmar = document.getElementById('btnConfirmarInvestimentoApp');
+    const paymentData = document.getElementById('paymentDataApp');
+    const btnPagamento = document.getElementById('btnPagamentoEfetuadoApp');
+    const whatsappArea = document.getElementById('whatsappAreaApp');
+    const btnWhatsapp = document.getElementById('btnWhatsappApp');
+    const btnQueroInvestirHome = document.getElementById('btnQueroInvestirHome');
+
+    // Perfil
+    const profileName = document.getElementById('profileName');
+    const profileClientId = document.getElementById('profileClientId');
+    const profilePhone = document.getElementById('profilePhone');
+    const profileAvatar = document.getElementById('profileAvatar');
+    const profileLevel = document.getElementById('profileLevel');
+    const profileLevelDetail = document.getElementById('profileLevelDetail');
+
+    // Sair
+    const btnLogout = document.getElementById('btnLogout');
+    const menuLogout = document.getElementById('menuLogout');
+
+    // PWA
+    let deferredPrompt = null;
+    const installBanner = document.getElementById('installBanner');
+    const btnInstall = document.getElementById('btnInstallApp');
+    const btnCloseBanner = document.getElementById('btnCloseBanner');
+
+    // Menu
+    const menuBtn = document.getElementById('menuBtn');
+    const menuOverlay = document.getElementById('menuOverlay');
+    const menuDrawer = document.getElementById('menuDrawer');
+    const menuUser = document.getElementById('menuUser');
+    const menuItems = document.querySelectorAll('.menu-item[data-page]');
+
+    // ========== SPLASH SCREEN ==========
+    setTimeout(() => {
+      splashScreen.classList.add('hidden');
+      setTimeout(() => splashScreen.style.display = 'none', 800);
+    }, 3000);
+
+    // ========== ÁUDIO (sons) ==========
+    function playSound(type) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        gain.gain.value = 0.08;
+        if (type === 'login') {
+          osc.frequency.value = 600;
+          osc.type = 'sine';
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 0.3);
+        } else if (type === 'confirm') {
+          osc.frequency.value = 800;
+          osc.type = 'sine';
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 0.2);
+          setTimeout(() => {
+            const osc2 = ctx.createOscillator();
+            const gain2 = ctx.createGain();
+            osc2.connect(gain2);
+            gain2.connect(ctx.destination);
+            gain2.gain.value = 0.08;
+            osc2.frequency.value = 1000;
+            osc2.type = 'sine';
+            gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+            osc2.start(ctx.currentTime);
+            osc2.stop(ctx.currentTime + 0.25);
+          }, 150);
+        } else if (type === 'notif') {
+          osc.frequency.value = 1200;
+          osc.type = 'sine';
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 0.15);
+        } else if (type === 'error') {
+          osc.frequency.value = 300;
+          osc.type = 'sawtooth';
+          gain.gain.value = 0.05;
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 0.4);
+        }
+      } catch(e) {}
+    }
+
+    // ========== PWA INSTALAÇÃO ==========
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      if (!window.matchMedia('(display-mode: standalone)').matches) {
+        installBanner.classList.add('visible');
+      }
+    });
+
+    btnInstall.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const result = await deferredPrompt.userChoice;
+        if (result.outcome === 'accepted') installBanner.classList.remove('visible');
+        deferredPrompt = null;
+      }
+    });
+
+    btnCloseBanner.addEventListener('click', () => {
+      installBanner.classList.remove('visible');
+    });
+
+    // ========== FUNÇÃO CALCULAR ==========
+    function calcularRetorno(valor) {
+      let val = Math.round(valor / 1000) * 1000;
+      if (val < 1000) val = 1000;
+      if (val > 10000) val = 10000;
+      const item = TABLE_RETURN.find(r => r.invest === val);
+      if (item) return item;
+      const sorted = [...TABLE_RETURN].sort((a,b) => a.invest - b.invest);
+      let lower = sorted[0], upper = sorted[sorted.length-1];
+      for (let i = 0; i < sorted.length-1; i++) {
+        if (val >= sorted[i].invest && val <= sorted[i+1].invest) {
+          lower = sorted[i];
+          upper = sorted[i+1];
+          break;
+        }
+      }
+      const frac = (val - lower.invest) / (upper.invest - lower.invest);
+      const retorno = Math.round(lower.retorno + (upper.retorno - lower.retorno) * frac);
+      return { invest: val, retorno, tempo: lower.tempo };
+    }
+
+    function atualizarCalculadora() {
+      const valor = parseInt(sliderValor.value, 10);
+      const result = calcularRetorno(valor);
+      const display = result.invest.toLocaleString();
+      sliderValueLabel.textContent = display;
+      sliderDisplay.textContent = display + ' MZN';
+      valorInvestido.textContent = display + ' MZN';
+      valorRetorno.textContent = result.retorno.toLocaleString() + ' MZN';
+      valorTempo.textContent = result.tempo;
+      btnConfirmar.dataset.invest = result.invest;
+      btnConfirmar.dataset.retorno = result.retorno;
+      btnConfirmar.dataset.tempo = result.tempo;
+    }
+
+    sliderValor.addEventListener('input', atualizarCalculadora);
+
+    // ========== REGISTO ==========
+    function showRegister() {
+      loginBox.style.display = 'none';
+      registerBox.classList.add('active');
+      registerForm.style.display = 'block';
+      registerSuccess.classList.remove('active');
+      regFullName.value = '';
+      regPhone.value = '';
+      regPassword.value = '';
+    }
+
+    function showLogin() {
+      loginBox.style.display = 'block';
+      registerBox.classList.remove('active');
+    }
+
+    btnCreate.addEventListener('click', function(e) {
+      e.preventDefault();
+      showRegister();
+    });
+
+    btnBackToLogin.addEventListener('click', function(e) {
+      e.preventDefault();
+      showLogin();
+    });
+
+    btnRegister.addEventListener('click', function(e) {
+      e.preventDefault();
+      const nome = regFullName.value.trim();
+      const telefone = regPhone.value.trim();
+      if (!nome || !telefone) {
+        alert('Por favor, preencha o nome completo e o número de telefone.');
+        return;
+      }
+      if (telefone.replace(/\D/g, '').length < 6) {
+        alert('Por favor, insira um número de telefone válido (mínimo 6 dígitos).');
+        return;
+      }
+      registerForm.style.display = 'none';
+      registerSuccess.classList.add('active');
+      playSound('confirm');
+      setTimeout(() => {
+        showLogin();
+        fullName.value = nome;
+        phoneNumber.value = telefone;
+      }, 3000);
+    });
+
+    // ========== LOADING ==========
+    function iniciarLoading() {
+      loadingOverlay.classList.add('active');
+      progressBar.style.width = '0%';
+      const messages = [
+        'A verificar credenciais...',
+        'A ligar à Inteligência Artificial...',
+        'A analisar oportunidades...',
+        'A preparar o seu painel...',
+        'A inicializar a plataforma...'
+      ];
+      let currentStep = 0;
+      const totalSteps = 60;
+
+      const interval = setInterval(() => {
+        currentStep++;
+        const progress = Math.min(100, (currentStep / totalSteps) * 100);
+        progressBar.style.width = progress + '%';
+        const msgIndex = Math.min(Math.floor(progress / 20), messages.length-1);
+        loadingMsg.textContent = messages[msgIndex];
+
+        if (progress >= 100) {
+          clearInterval(interval);
+          loadingOverlay.classList.remove('active');
+          loginScreen.classList.add('hidden');
+          dashboard.classList.add('active');
+          const nome = fullName.value.trim() || 'Utilizador';
+          const telefone = phoneNumber.value.trim() || 'CL-2026';
+          profileName.textContent = nome;
+          profileClientId.textContent = 'Cliente #' + telefone;
+          profilePhone.textContent = telefone;
+          profileAvatar.textContent = nome.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+          menuUser.textContent = nome;
+          playSound('login');
+          // Inicializar dados
+          initDashboardData();
+          initCharts();
+          initHistory();
+          initWallet();
+          initNotifications();
+          initFeed();
+          navegarPara('pageDashboard');
+          document.getElementById('pageContainer').scrollTop = 0;
+        }
+      }, 250);
+    }
+
+    // ========== LOGIN ==========
+    btnLogin.addEventListener('click', function(e) {
+      e.preventDefault();
+      const nome = fullName.value.trim();
+      const telefone = phoneNumber.value.trim();
+      if (!nome || !telefone) {
+        alert('Preencha o nome completo e o número de telefone.');
+        playSound('error');
+        return;
+      }
+      iniciarLoading();
+    });
+
+    // ========== NAVEGAÇÃO ==========
+    function navegarPara(pageId) {
+      Object.values(pages).forEach(p => p.classList.remove('active'));
+      const target = document.getElementById(pageId);
+      if (target) target.classList.add('active');
+      navItems.forEach(item => {
+        item.classList.remove('active');
+        if (item.dataset.page === pageId) item.classList.add('active');
+      });
+      const nomes = {
+        pageDashboard: 'Dashboard',
+        pageHome: 'Início',
+        pageInvest: 'Investimentos',
+        pageWallet: 'Carteira',
+        pageHistory: 'Histórico',
+        pageNotif: 'Notificações',
+        pageProfile: 'Perfil',
+        pageStats: 'Estatísticas',
+        pageHelp: 'Ajuda'
+      };
+      appBarTitle.textContent = nomes[pageId] || 'SENTINELA';
+      document.getElementById('pageContainer').scrollTop = 0;
+      // Fechar menu
+      closeMenu();
+    }
+
+    navItems.forEach(item => {
+      item.addEventListener('click', function() {
+        const pageId = this.dataset.page;
+        navegarPara(pageId);
+      });
+    });
+
+    // ========== MENU LATERAL ==========
+    function openMenu() {
+      menuOverlay.classList.add('active');
+      menuDrawer.classList.add('open');
+    }
+    function closeMenu() {
+      menuOverlay.classList.remove('active');
+      menuDrawer.classList.remove('open');
+    }
+    menuBtn.addEventListener('click', openMenu);
+    menuOverlay.addEventListener('click', closeMenu);
+    menuItems.forEach(item => {
+      item.addEventListener('click', function() {
+        navegarPara(this.dataset.page);
+      });
+    });
+
+    // ========== BOTÃO "QUERO INVESTIR" ==========
+    btnQueroInvestirHome.addEventListener('click', function() {
+      navegarPara('pageInvest');
+    });
+
+    // ========== ESCOLHA DO INVESTIMENTO ==========
+    let opcaoSelecionada = null;
+
+    function selecionarOpcao(opcao) {
+      opcaoSelecionada = opcao;
+      calcSection.classList.add('visible');
+      paymentData.classList.remove('visible');
+      whatsappArea.classList.add('hidden');
+      [cardAviator, cardTrader].forEach(c => c.style.borderColor = 'rgba(255,255,255,0.05)');
+      if (opcao === 'aviator') cardAviator.style.borderColor = '#b31b1b';
+      else cardTrader.style.borderColor = '#b31b1b';
+      atualizarCalculadora();
+      setTimeout(() => {
+        calcSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+    }
+
+    cardAviator.addEventListener('click', () => selecionarOpcao('aviator'));
+    cardTrader.addEventListener('click', () => selecionarOpcao('trader'));
+
+    // ========== CONFIRMAR INVESTIMENTO ==========
+    btnConfirmar.addEventListener('click', function() {
+      if (!opcaoSelecionada) {
+        alert('Selecione primeiro uma opção de investimento (Aviator ou Trader).');
+        playSound('error');
+        return;
+      }
+      paymentData.classList.add('visible');
+      whatsappArea.classList.add('hidden');
+      paymentData.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      playSound('confirm');
+    });
+
+    // ========== JÁ EFETUEI PAGAMENTO ==========
+    btnPagamento.addEventListener('click', function() {
+      whatsappArea.classList.remove('hidden');
+      whatsappArea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      playSound('notif');
+    });
+
+    // ========== ENVIAR WHATSAPP (corrigido) ==========
+    btnWhatsapp.addEventListener('click', function() {
+      const numero = '258877426441';
+      const msg = encodeURIComponent('Olá, efetuei o meu investimento na plataforma SENTINELA e estou a enviar o comprovativo de pagamento para validação.');
+      window.open(`https://wa.me/${numero}?text=${msg}`, '_blank');
+      playSound('confirm');
+    });
+
+    // ========== SAIR ==========
+    function logout() {
+      if (confirm('Deseja sair da sua conta?')) {
+        dashboard.classList.remove('active');
+        loginScreen.classList.remove('hidden');
+        opcaoSelecionada = null;
+        calcSection.classList.remove('visible');
+        paymentData.classList.remove('visible');
+        whatsappArea.classList.add('hidden');
+        [cardAviator, cardTrader].forEach(c => c.style.borderColor = 'rgba(255,255,255,0.05)');
+        navegarPara('pageDashboard');
+        document.getElementById('pageContainer').scrollTop = 0;
+        showLogin();
+        closeMenu();
+      }
+    }
+
+    btnLogout.addEventListener('click', logout);
+    menuLogout.addEventListener('click', logout);
+
+    // ========== ATALHOS ==========
+    document.getElementById('notifIconBtn').addEventListener('click', function() {
+      navegarPara('pageNotif');
+    });
+    document.getElementById('profileIconBtn').addEventListener('click', function() {
+      navegarPara('pageProfile');
+    });
+
+    // ========== DADOS MOCK ==========
+    let saldo = 12500;
+    let capitalInvestido = 8700;
+    let lucro = 3200;
+    let ativos = 4;
+
+    // ========== DASHBOARD ==========
+    function initDashboardData() {
+      updateDashboardUI();
+    }
+
+    function updateDashboardUI() {
+      animateNumber('dashSaldo', saldo, ' MZN');
+      animateNumber('dashCapital', capitalInvestido, ' MZN');
+      animateNumber('dashLucro', lucro, ' MZN');
+      document.getElementById('dashAtivos').textContent = ativos;
+    }
+
+    function animateNumber(id, target, suffix) {
+      const el = document.getElementById(id);
+      let current = 0;
+      const step = Math.max(1, Math.floor(target / 30));
+      const interval = setInterval(() => {
+        current += step;
+        if (current >= target) {
+          current = target;
+          clearInterval(interval);
+        }
+        el.textContent = current.toLocaleString() + suffix;
+      }, 50);
+    }
+
+    // ========== GRÁFICOS ==========
+    let chartSaldo, chartStatsSaldo, chartStatsInvest, chartStatsLucro;
+
+    function initCharts() {
+      const ctxSaldo = document.getElementById('chartSaldo').getContext('2d');
+      chartSaldo = new Chart(ctxSaldo, {
+        type: 'line',
+        data: {
+          labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+          datasets: [{
+            label: 'Saldo',
+            data: [8000, 9500, 10200, 11800, 12500, 14000],
+            borderColor: '#b31b1b',
+            backgroundColor: 'rgba(179,27,27,0.1)',
+            fill: true,
+            tension: 0.3,
+            pointRadius: 3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' } }, y: { grid: { color: 'rgba(255,255,255,0.05)' } } }
+        }
+      });
+
+      // Estatísticas
+      const ctxStatsSaldo = document.getElementById('chartStatsSaldo').getContext('2d');
+      chartStatsSaldo = new Chart(ctxStatsSaldo, {
+        type: 'line',
+        data: {
+          labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+          datasets: [{
+            label: 'Saldo',
+            data: [8000, 9500, 10200, 11800, 12500, 14000],
+            borderColor: '#b31b1b',
+            backgroundColor: 'rgba(179,27,27,0.1)',
+            fill: true,
+            tension: 0.3
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#aaa' } } }, scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' } }, y: { grid: { color: 'rgba(255,255,255,0.05)' } } } }
+      });
+
+      const ctxStatsInvest = document.getElementById('chartStatsInvest').getContext('2d');
+      chartStatsInvest = new Chart(ctxStatsInvest, {
+        type: 'bar',
+        data: {
+          labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+          datasets: [{
+            label: 'Investimentos',
+            data: [3000, 4500, 5000, 6200, 7800, 8700],
+            backgroundColor: 'rgba(179,27,27,0.7)',
+            borderRadius: 4
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#aaa' } } }, scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' } }, y: { grid: { color: 'rgba(255,255,255,0.05)' } } } }
+      });
+
+      const ctxStatsLucro = document.getElementById('chartStatsLucro').getContext('2d');
+      chartStatsLucro = new Chart(ctxStatsLucro, {
+        type: 'line',
+        data: {
+          labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+          datasets: [{
+            label: 'Lucro',
+            data: [500, 800, 1200, 1800, 2500, 3200],
+            borderColor: '#4caf50',
+            backgroundColor: 'rgba(76,175,80,0.1)',
+            fill: true,
+            tension: 0.3
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#aaa' } } }, scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' } }, y: { grid: { color: 'rgba(255,255,255,0.05)' } } } }
+      });
+    }
+
+    // ========== HISTÓRICO ==========
+    function initHistory() {
+      const container = document.getElementById('historyContainer');
+      const items = [
+        { amount: 3000, date: '02/08/2026', time: '14:30', method: 'Transferência', status: 'Concluído', result: '+4500' },
+        { amount: 1500, date: '01/08/2026', time: '09:15', method: 'MB Way', status: 'Pendente', result: '—' },
+        { amount: 5000, date: '30/07/2026', time: '18:45', method: 'Transferência', status: 'Concluído', result: '+7500' },
+        { amount: 2000, date: '28/07/2026', time: '11:20', method: 'MB Way', status: 'Falhou', result: '—' },
+        { amount: 1000, date: '25/07/2026', time: '16:00', method: 'Transferência', status: 'Concluído', result: '+1500' }
+      ];
+      container.innerHTML = items.map(item => `
+        <div class="history-item">
+          <div class="left">
+            <span class="amount">${item.amount} MZN</span>
+            <span class="meta">${item.date} · ${item.time} · ${item.method}</span>
+          </div>
+          <div class="status ${item.status.toLowerCase()}">${item.status} ${item.result !== '—' ? '· '+item.result : ''}</div>
+        </div>
+      `).join('');
+    }
+
+    // ========== CARTEIRA ==========
+    function initWallet() {
+      document.getElementById('walletSaldo').textContent = saldo.toLocaleString() + ' MZN';
+      document.getElementById('walletInvest').textContent = capitalInvestido.toLocaleString() + ' MZN';
+      document.getElementById('walletDepositos').textContent = '14500 MZN';
+      document.getElementById('walletLevantamentos').textContent = '2000 MZN';
+      const history = document.getElementById('walletHistory');
+      history.innerHTML = `
+        <div class="history-item"><div class="left"><span class="amount">+5.000 MZN</span><span class="meta">Depósito · 02/08/2026</span></div><div class="status">Concluído</div></div>
+        <div class="history-item"><div class="left"><span class="amount">-1.200 MZN</span><span class="meta">Levantamento · 01/08/2026</span></div><div class="status">Concluído</div></div>
+        <div class="history-item"><div class="left"><span class="amount">+3.000 MZN</span><span class="meta">Retorno · 30/07/2026</span></div><div class="status">Concluído</div></div>
+      `;
+    }
+
+    // ========== NOTIFICAÇÕES ==========
+    function initNotifications() {
+      const container = document.getElementById('notifContainer');
+      const notifs = [
+        { icon: 'fa-check', title: 'Investimento confirmado', desc: 'O seu investimento de 3.000 MZN foi registado.', time: '2h atrás' },
+        { icon: 'fa-chart-line', title: 'Mercado em alta', desc: 'As ações tecnológicas subiram 2,5% hoje.', time: '5h atrás' },
+        { icon: 'fa-bullhorn', title: 'Nova oportunidade', desc: 'Aviator apresenta novo plano de retorno rápido.', time: '1 dia atrás' },
+        { icon: 'fa-rocket', title: 'Sistema atualizado', desc: 'A plataforma foi atualizada com novas funcionalidades.', time: '2 dias atrás' }
+      ];
+      container.innerHTML = notifs.map(n => `
+        <div class="notif-item">
+          <div class="icon-circle"><i class="fas ${n.icon}"></i></div>
+          <div class="content"><div class="title">${n.title}</div><div class="desc">${n.desc}</div></div>
+          <div class="time">${n.time}</div>
+        </div>
+      `).join('');
+    }
+
+    // ========== FEED ==========
+    function initFeed() {
+      const container = document.getElementById('feedContainer');
+      const feed = [
+        { user: 'João', action: 'iniciou um investimento de 3.000 MZN', time: 'há 10 min' },
+        { user: 'Maria', action: 'concluiu um investimento com lucro de 2.500 MZN', time: 'há 30 min' },
+        { user: 'Carlos', action: 'registou-se na plataforma', time: 'há 1 hora' },
+        { user: 'Ana', action: 'atualizou o perfil', time: 'há 2 horas' }
+      ];
+      container.innerHTML = feed.map(item => `
+        <div class="feed-item">
+          <div class="avatar">${item.user[0]}</div>
+          <div class="text"><span class="highlight">${item.user}</span> ${item.action}</div>
+          <div class="time">${item.time}</div>
+        </div>
+      `).join('');
+    }
+
+    // ========== PERFIL: NÍVEL ==========
+    function getLevel(capital) {
+      if (capital >= 50000) return { name: 'Elite', icon: '👑', emoji: '👑' };
+      if (capital >= 20000) return { name: 'Diamond', icon: '💎', emoji: '💎' };
+      if (capital >= 10000) return { name: 'Gold', icon: '🥇', emoji: '🥇' };
+      if (capital >= 5000) return { name: 'Silver', icon: '🥈', emoji: '🥈' };
+      return { name: 'Bronze', icon: '🥉', emoji: '🥉' };
+    }
+
+    // Atualiza nível após login
+    function updateLevel() {
+      const level = getLevel(capitalInvestido);
+      profileLevel.innerHTML = `<i class="fas fa-star"></i> ${level.name}`;
+      profileLevelDetail.textContent = level.emoji + ' ' + level.name;
+    }
+
+    // ========== FAQ ==========
+    document.querySelectorAll('.faq-item .question').forEach(q => {
+      q.addEventListener('click', function() {
+        const answer = this.nextElementSibling;
+        answer.classList.toggle('open');
+        const icon = this.querySelector('i');
+        if (answer.classList.contains('open')) {
+          icon.className = 'fas fa-chevron-up';
+        } else {
+          icon.className = 'fas fa-chevron-down';
+        }
+      });
+    });
+
+    // ========== INICIALIZAÇÃO ==========
+    sliderValor.value = '3000';
+    atualizarCalculadora();
+    updateLevel();
+
+    // ========== SERVICE WORKER ==========
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js')
+        .then(reg => console.log('Service Worker registado com sucesso!'))
+        .catch(err => console.warn('Erro ao registar Service Worker:', err));
+    }
+
+  })();
+</script>
+</body>
+</html>
