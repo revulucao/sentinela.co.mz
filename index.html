@@ -759,55 +759,130 @@
       margin-bottom: 0.5rem;
     }
 
-    /* ========== DASHBOARD CARDS ========== */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 1rem;
+    /* ========== CARTÃO DO CLIENTE (NOVO) ========== */
+    .client-card {
+      background: rgba(20,20,20,0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 2rem;
+      padding: 1.8rem 1.5rem;
       margin-bottom: 1.5rem;
+      border: 1px solid rgba(255,215,0,0.25);
+      box-shadow: 0 15px 40px -10px rgba(0,0,0,0.8), 0 0 30px rgba(255,215,0,0.05);
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s;
     }
-    .stat-card {
-      background: rgba(20,20,20,0.5);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,0.04);
-      border-radius: 1.5rem;
-      padding: 1.2rem 1rem;
-      text-align: center;
-      transition: transform 0.2s;
+    .client-card:hover {
+      border-color: rgba(255,215,0,0.5);
     }
-    .stat-card:hover {
-      transform: translateY(-4px);
+    .client-card::before {
+      content: '';
+      position: absolute;
+      top: -60%;
+      left: -60%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 40%, rgba(255,215,0,0.06), transparent 60%);
+      pointer-events: none;
     }
-    .stat-card .label {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      color: #888;
-      letter-spacing: 0.06em;
+    .client-card .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.2rem;
+      position: relative;
+      z-index: 1;
     }
-    .stat-card .value {
+    .client-card .greeting {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #f0f0f0;
+    }
+    .client-card .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #ffd700;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+    .client-card .brand i {
+      font-size: 2rem;
+      color: #1a1f71; /* azul Visa */
+      background: white;
+      border-radius: 4px;
+      padding: 2px;
+    }
+    .client-card .brand .sentinel {
+      background: linear-gradient(135deg, #f0f0f0, #b31b1b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 1.1rem;
+    }
+    .client-card .card-body {
+      margin: 0.2rem 0 0.8rem;
+      position: relative;
+      z-index: 1;
+    }
+    .client-card .client-name {
       font-size: 1.6rem;
       font-weight: 700;
-      color: #f0f0f0;
+      color: #fff;
+      line-height: 1.2;
+    }
+    .client-card .client-id {
+      font-size: 0.9rem;
+      color: #aaa;
+      letter-spacing: 0.05em;
+      margin-top: 0.1rem;
+    }
+    .client-card .card-footer {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 0.5rem;
+      border-top: 1px solid rgba(255,215,0,0.15);
+      padding-top: 0.8rem;
       margin-top: 0.3rem;
+      position: relative;
+      z-index: 1;
     }
-    .stat-card .value.green { color: #4caf50; }
-    .stat-card .value.red { color: #b31b1b; }
-    .stat-card .value.gold { color: #ffd700; }
-
-    .chart-container {
-      background: rgba(20,20,20,0.4);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,0.04);
-      border-radius: 1.5rem;
-      padding: 1rem;
-      margin-bottom: 1.5rem;
-      height: 200px;
+    .client-card .balance-item {
+      text-align: center;
     }
-    .chart-container canvas {
-      width: 100% !important;
-      height: 100% !important;
+    .client-card .balance-item .label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      color: #888;
+      letter-spacing: 0.04em;
+    }
+    .client-card .balance-item .value {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #f0f0f0;
+      margin-top: 0.1rem;
+    }
+    .client-card .balance-item .value.green { color: #4caf50; }
+    .client-card .balance-item .value.red { color: #b31b1b; }
+    .client-card .balance-item .value.gold { color: #ffd700; }
+    .client-card .badge-ativos {
+      display: inline-block;
+      background: rgba(255,215,0,0.1);
+      border: 1px solid rgba(255,215,0,0.2);
+      border-radius: 2rem;
+      padding: 0.1rem 0.8rem;
+      font-size: 0.7rem;
+      color: #ffd700;
+      margin-top: 0.2rem;
+    }
+    @media (max-width: 600px) {
+      .client-card .greeting { font-size: 1rem; }
+      .client-card .client-name { font-size: 1.3rem; }
+      .client-card .balance-item .value { font-size: 1.1rem; }
+      .client-card .card-footer { grid-template-columns: 1fr 1fr; }
     }
 
     /* ========== PÁGINA INÍCIO (HOME) ========== */
@@ -1064,6 +1139,58 @@
       flex-wrap: wrap;
       gap: 0.8rem;
       margin-top: 1rem;
+    }
+
+    .btn-pagamento {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      padding: 0.7rem 1.8rem;
+      border: none;
+      border-radius: 3rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: #fff;
+      flex: 1 1 auto;
+      min-width: 140px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .btn-pagamento:active {
+      transform: scale(0.96);
+    }
+    .btn-mpesa {
+      background: #d32f2f;
+    }
+    .btn-mpesa:hover {
+      background: #b71c1c;
+    }
+    .btn-emola {
+      background: #f57c00;
+    }
+    .btn-emola:hover {
+      background: #e65100;
+    }
+    .btn-copiar {
+      background: rgba(255,255,255,0.08);
+      color: #ccc;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .btn-copiar:hover {
+      background: rgba(255,255,255,0.15);
+    }
+    .toast-copy {
+      display: inline-block;
+      background: rgba(0,0,0,0.8);
+      color: #4caf50;
+      padding: 0.4rem 1rem;
+      border-radius: 2rem;
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+      border: 1px solid rgba(76,175,80,0.2);
+      animation: fadeIn 0.3s ease;
     }
 
     .btn-whatsapp-app {
@@ -1473,7 +1600,6 @@
       .nav-item span { font-size: 0.55rem; }
       .calc-result-app { grid-template-columns: 1fr; gap: 0.5rem; }
       .profile-avatar { width: 60px; height: 60px; font-size: 2rem; }
-      .stats-grid { grid-template-columns: 1fr 1fr; }
     }
 
     @media (max-width: 400px) {
@@ -1484,6 +1610,19 @@
     .page-container {
       scrollbar-width: thin;
       scrollbar-color: #b31b1b transparent;
+    }
+
+    /* Estilo extra para o texto informativo no pagamento */
+    .payment-info-text {
+      color: #ccc;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      margin: 0.8rem 0 0.5rem;
+      padding: 0.5rem 0;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .payment-info-text strong {
+      color: #f0f0f0;
     }
   </style>
 </head>
@@ -1526,14 +1665,14 @@
         <div>
           <label>Nome completo</label>
           <div class="input-group">
-            <input type="text" id="fullName" placeholder="Ex: Joaquim Silva" value="João Mateus">
+            <input type="text" id="fullName" placeholder="Ex: Joaquim Silva" value="">
             <i class="fas fa-user"></i>
           </div>
         </div>
         <div>
           <label>Número de telefone</label>
           <div class="input-group">
-            <input type="tel" id="phoneNumber" placeholder="Ex: 84 123 4567" value="84 123 4567">
+            <input type="tel" id="phoneNumber" placeholder="Ex: 84 123 4567" value="">
             <i class="fas fa-phone"></i>
           </div>
         </div>
@@ -1632,14 +1771,41 @@
     <!-- Container de páginas -->
     <div class="page-container" id="pageContainer">
 
-      <!-- ===== PÁGINA DASHBOARD (nova) ===== -->
+      <!-- ===== PÁGINA DASHBOARD ===== -->
       <div class="page active" id="pageDashboard">
-        <div class="stats-grid">
-          <div class="stat-card"><div class="label">Saldo disponível</div><div class="value" id="dashSaldo">0 MZN</div></div>
-          <div class="stat-card"><div class="label">Capital investido</div><div class="value" id="dashCapital">0 MZN</div></div>
-          <div class="stat-card"><div class="label">Lucro acumulado</div><div class="value green" id="dashLucro">0 MZN</div></div>
-          <div class="stat-card"><div class="label">Investimentos ativos</div><div class="value" id="dashAtivos">0</div></div>
+        <!-- CARTÃO DO CLIENTE (substitui a grelha de estatísticas) -->
+        <div class="client-card" id="clientCard">
+          <div class="card-header">
+            <span class="greeting" id="greetingText">Olá, Utilizador!</span>
+            <span class="brand">
+              <i class="fab fa-cc-visa"></i>
+              <span class="sentinel">SENTINELA</span>
+            </span>
+          </div>
+          <div class="card-body">
+            <div class="client-name" id="clientName">Utilizador</div>
+            <div class="client-id" id="clientId">Cliente Nº 000000</div>
+          </div>
+          <div class="card-footer">
+            <div class="balance-item">
+              <div class="label">Saldo Disponível</div>
+              <div class="value" id="dashSaldo">0 MZN</div>
+            </div>
+            <div class="balance-item">
+              <div class="label">Saldo de Investimento</div>
+              <div class="value" id="dashCapital">0 MZN</div>
+            </div>
+            <div class="balance-item">
+              <div class="label">Lucro Acumulado</div>
+              <div class="value green" id="dashLucro">0 MZN</div>
+            </div>
+            <div class="balance-item">
+              <div class="label">Investimentos Ativos</div>
+              <div class="value gold" id="dashAtivos">0</div>
+            </div>
+          </div>
         </div>
+
         <div class="card">
           <div class="card-title">Evolução do saldo</div>
           <div class="chart-container"><canvas id="chartSaldo"></canvas></div>
@@ -1706,13 +1872,31 @@
             <i class="fas fa-credit-card" style="color:#b31b1b;"></i>
             <span style="font-weight:500;">Dados para pagamento</span>
           </div>
-          <div class="row"><span class="label">Número</span><span class="value highlight">877 426 441</span></div>
+          <div class="row"><span class="label">Número</span><span class="value highlight" id="paymentNumber">877 426 441</span></div>
           <div class="row"><span class="label">Nome</span><span class="value">EUSÉBIO DOS SANTOS</span></div>
-          <div class="payment-actions-app">
-            <button class="btn btn-primary" id="btnPagamentoEfetuadoApp"><i class="fas fa-check"></i> Já efetuei o pagamento</button>
+          <!-- Botão copiar -->
+          <div style="margin: 0.5rem 0;">
+            <button class="btn btn-copiar" id="btnCopiarNumero"><i class="fas fa-copy"></i> 📋 Copiar Número de Pagamento</button>
+            <div id="toastCopiar" style="display: none;" class="toast-copy">✅ Número copiado com sucesso.</div>
           </div>
+          <!-- Opções de pagamento -->
+          <div class="payment-actions-app">
+            <button class="btn-pagamento btn-mpesa" id="btnMpesa">
+              <i class="fas fa-mobile-alt"></i> M-Pesa
+            </button>
+            <button class="btn-pagamento btn-emola" id="btnEmola">
+              <i class="fas fa-mobile-alt"></i> E-Mola
+            </button>
+          </div>
+
+          <!-- NOVO: Texto informativo e botão para enviar comprovativo -->
+          <div class="payment-info-text">
+            <strong>Após efetuar o seu depósito de investimento, clique no botão abaixo para enviar o comprovativo do depósito ao nosso atendimento. A confirmação do comprovativo permitirá a validação mais rápida do seu investimento.</strong>
+          </div>
+          <button class="btn-whatsapp-app" id="btnEnviarComprovativo"><i class="fab fa-whatsapp"></i> 📤 Enviar Comprovativo no WhatsApp</button>
         </div>
 
+        <!-- Área antiga do WhatsApp (mantida, mas agora redundante; pode ser removida se desejar, mas mantive para não alterar o que não foi pedido) -->
         <div id="whatsappAreaApp" class="hidden" style="margin-top:1rem; text-align:center; background:rgba(0,0,0,0.2); padding:1rem; border-radius:2rem; border:1px solid rgba(255,255,255,0.03);">
           <p style="color:#ccc; margin-bottom:0.8rem;"><i class="fas fa-paper-plane" style="color:#25D366;"></i> Envie o comprovativo pelo WhatsApp</p>
           <button class="btn-whatsapp-app" id="btnWhatsappApp"><i class="fab fa-whatsapp"></i> Enviar comprovativo</button>
@@ -1751,13 +1935,13 @@
         <div class="profile-header">
           <div class="profile-avatar" id="profileAvatar">JM</div>
           <div class="profile-info">
-            <div class="name" id="profileName">João Mateus</div>
-            <div class="client-id" id="profileClientId">Cliente #CL-2026</div>
+            <div class="name" id="profileName">Utilizador</div>
+            <div class="client-id" id="profileClientId">Cliente #000000</div>
             <div class="level" id="profileLevel"><i class="fas fa-star"></i> Bronze</div>
           </div>
         </div>
         <div class="card">
-          <div class="profile-detail"><span class="label">Número de telefone</span><span class="value" id="profilePhone">84 123 4567</span></div>
+          <div class="profile-detail"><span class="label">Número de telefone</span><span class="value" id="profilePhone">—</span></div>
           <div class="profile-detail"><span class="label">Data de criação</span><span class="value" id="profileCreated">01/01/2026</span></div>
           <div class="profile-detail"><span class="label">Estado da conta</span><span class="value verified" id="profileStatus">Ativa</span></div>
           <div class="profile-detail"><span class="label">Conta Verificada</span><span class="value verified"><i class="fas fa-check-circle"></i> Sim</span></div>
@@ -1820,7 +2004,7 @@
 <div class="menu-drawer" id="menuDrawer">
   <div class="menu-header">
     <div class="logo">SENTINELA</div>
-    <div class="user" id="menuUser">João Mateus</div>
+    <div class="user" id="menuUser">Utilizador</div>
   </div>
   <button class="menu-item" data-page="pageDashboard"><i class="fas fa-home"></i> Dashboard</button>
   <button class="menu-item" data-page="pageInvest"><i class="fas fa-chart-pie"></i> Investimentos</button>
@@ -1899,18 +2083,26 @@
     const valorTempo = document.getElementById('valorTempoApp');
     const btnConfirmar = document.getElementById('btnConfirmarInvestimentoApp');
     const paymentData = document.getElementById('paymentDataApp');
-    const btnPagamento = document.getElementById('btnPagamentoEfetuadoApp');
+    const btnMpesa = document.getElementById('btnMpesa');
+    const btnEmola = document.getElementById('btnEmola');
+    const btnCopiar = document.getElementById('btnCopiarNumero');
+    const toastCopiar = document.getElementById('toastCopiar');
+    const paymentNumber = document.getElementById('paymentNumber');
+    const btnEnviarComprovativo = document.getElementById('btnEnviarComprovativo');
     const whatsappArea = document.getElementById('whatsappAreaApp');
     const btnWhatsapp = document.getElementById('btnWhatsappApp');
     const btnQueroInvestirHome = document.getElementById('btnQueroInvestirHome');
 
-    // Perfil
+    // Perfil e Cartão
     const profileName = document.getElementById('profileName');
     const profileClientId = document.getElementById('profileClientId');
     const profilePhone = document.getElementById('profilePhone');
     const profileAvatar = document.getElementById('profileAvatar');
     const profileLevel = document.getElementById('profileLevel');
     const profileLevelDetail = document.getElementById('profileLevelDetail');
+    const greetingText = document.getElementById('greetingText');
+    const clientName = document.getElementById('clientName');
+    const clientId = document.getElementById('clientId');
 
     // Sair
     const btnLogout = document.getElementById('btnLogout');
@@ -2082,6 +2274,14 @@
         alert('Por favor, insira um número de telefone válido (mínimo 6 dígitos).');
         return;
       }
+      const users = JSON.parse(localStorage.getItem('sentinel_users') || '[]');
+      if (users.find(u => u.phone === telefone)) {
+        alert('Este número de telefone já está registado.');
+        return;
+      }
+      users.push({ name: nome, phone: telefone, password: regPassword.value || '' });
+      localStorage.setItem('sentinel_users', JSON.stringify(users));
+      
       registerForm.style.display = 'none';
       registerSuccess.classList.add('active');
       playSound('confirm');
@@ -2092,8 +2292,28 @@
       }, 3000);
     });
 
+    // ========== LOGIN ==========
+    btnLogin.addEventListener('click', function(e) {
+      e.preventDefault();
+      const nome = fullName.value.trim();
+      const telefone = phoneNumber.value.trim();
+      if (!nome || !telefone) {
+        alert('Preencha o nome completo e o número de telefone.');
+        playSound('error');
+        return;
+      }
+      const users = JSON.parse(localStorage.getItem('sentinel_users') || '[]');
+      const user = users.find(u => u.phone === telefone && u.name === nome);
+      if (!user) {
+        alert('Credenciais inválidas. Por favor, registe-se primeiro.');
+        playSound('error');
+        return;
+      }
+      iniciarLoading(user);
+    });
+
     // ========== LOADING ==========
-    function iniciarLoading() {
+    function iniciarLoading(user) {
       loadingOverlay.classList.add('active');
       progressBar.style.width = '0%';
       const messages = [
@@ -2118,13 +2338,21 @@
           loadingOverlay.classList.remove('active');
           loginScreen.classList.add('hidden');
           dashboard.classList.add('active');
-          const nome = fullName.value.trim() || 'Utilizador';
-          const telefone = phoneNumber.value.trim() || 'CL-2026';
+          const nome = user.name;
+          const telefone = user.phone;
+          // Atualizar perfil
           profileName.textContent = nome;
-          profileClientId.textContent = 'Cliente #' + telefone;
+          const clientIdStr = 'Cliente #' + telefone.replace(/\D/g, '').slice(0,6);
+          profileClientId.textContent = clientIdStr;
           profilePhone.textContent = telefone;
           profileAvatar.textContent = nome.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
           menuUser.textContent = nome;
+          // Atualizar cartão
+          greetingText.textContent = 'Olá, ' + nome + '!';
+          clientName.textContent = nome;
+          clientId.textContent = clientIdStr;
+          // Atualizar nível
+          updateLevel();
           playSound('login');
           // Inicializar dados
           initDashboardData();
@@ -2138,19 +2366,6 @@
         }
       }, 250);
     }
-
-    // ========== LOGIN ==========
-    btnLogin.addEventListener('click', function(e) {
-      e.preventDefault();
-      const nome = fullName.value.trim();
-      const telefone = phoneNumber.value.trim();
-      if (!nome || !telefone) {
-        alert('Preencha o nome completo e o número de telefone.');
-        playSound('error');
-        return;
-      }
-      iniciarLoading();
-    });
 
     // ========== NAVEGAÇÃO ==========
     function navegarPara(pageId) {
@@ -2174,7 +2389,6 @@
       };
       appBarTitle.textContent = nomes[pageId] || 'SENTINELA';
       document.getElementById('pageContainer').scrollTop = 0;
-      // Fechar menu
       closeMenu();
     }
 
@@ -2240,20 +2454,54 @@
       playSound('confirm');
     });
 
-    // ========== JÁ EFETUEI PAGAMENTO ==========
-    btnPagamento.addEventListener('click', function() {
-      whatsappArea.classList.remove('hidden');
-      whatsappArea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // ========== COPIAR NÚMERO ==========
+    btnCopiar.addEventListener('click', function() {
+      const numero = paymentNumber.textContent.trim();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(numero).then(() => {
+          toastCopiar.style.display = 'inline-block';
+          setTimeout(() => { toastCopiar.style.display = 'none'; }, 3000);
+        }).catch(() => {
+          copiarFallback(numero);
+        });
+      } else {
+        copiarFallback(numero);
+      }
+    });
+
+    function copiarFallback(texto) {
+      const area = document.createElement('textarea');
+      area.value = texto;
+      document.body.appendChild(area);
+      area.select();
+      document.execCommand('copy');
+      document.body.removeChild(area);
+      toastCopiar.style.display = 'inline-block';
+      setTimeout(() => { toastCopiar.style.display = 'none'; }, 3000);
+    }
+
+    // ========== PAGAMENTO M-PESA ==========
+    btnMpesa.addEventListener('click', function() {
+      window.location.href = 'tel:*150%23';
       playSound('notif');
     });
 
-    // ========== ENVIAR WHATSAPP (corrigido) ==========
-    btnWhatsapp.addEventListener('click', function() {
+    // ========== PAGAMENTO E-MOLA ==========
+    btnEmola.addEventListener('click', function() {
+      window.location.href = 'tel:*898%23';
+      playSound('notif');
+    });
+
+    // ========== ENVIAR COMPROVATIVO (novo botão) ==========
+    function abrirWhatsAppComprovativo() {
       const numero = '258877426441';
       const msg = encodeURIComponent('Olá, efetuei o meu investimento na plataforma SENTINELA e estou a enviar o comprovativo de pagamento para validação.');
       window.open(`https://wa.me/${numero}?text=${msg}`, '_blank');
       playSound('confirm');
-    });
+    }
+
+    btnEnviarComprovativo.addEventListener('click', abrirWhatsAppComprovativo);
+    btnWhatsapp.addEventListener('click', abrirWhatsAppComprovativo); // mantido para compatibilidade
 
     // ========== SAIR ==========
     function logout() {
@@ -2342,7 +2590,6 @@
         }
       });
 
-      // Estatísticas
       const ctxStatsSaldo = document.getElementById('chartStatsSaldo').getContext('2d');
       chartStatsSaldo = new Chart(ctxStatsSaldo, {
         type: 'line',
@@ -2473,7 +2720,6 @@
       return { name: 'Bronze', icon: '🥉', emoji: '🥉' };
     }
 
-    // Atualiza nível após login
     function updateLevel() {
       const level = getLevel(capitalInvestido);
       profileLevel.innerHTML = `<i class="fas fa-star"></i> ${level.name}`;
