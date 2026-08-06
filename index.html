@@ -474,6 +474,62 @@
       100% { transform: scaleY(1); }
     }
 
+    /* ========== BARRA DE ESTADO DO SISTEMA ========== */
+    .system-status-bar {
+      background: rgba(11,11,11,0.95);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      padding: 0.4rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      z-index: 35;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: #aaa;
+      flex-wrap: wrap;
+      gap: 0.3rem 0.8rem;
+    }
+    .system-status-bar .status-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .system-status-bar .status-item .indicator {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      animation: pulseDot 1.8s ease-in-out infinite;
+    }
+    .system-status-bar .status-item .indicator.online {
+      background: #4caf50;
+      box-shadow: 0 0 8px rgba(76,175,80,0.4);
+    }
+    .system-status-bar .status-item .indicator.offline {
+      background: #b31b1b;
+      box-shadow: 0 0 8px rgba(179,27,27,0.4);
+      animation: none;
+    }
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.2); }
+    }
+    .system-status-bar .status-label {
+      color: #eee;
+    }
+    .system-status-bar .status-time {
+      color: #666;
+      font-size: 0.7rem;
+    }
+    @media (max-width: 600px) {
+      .system-status-bar { padding: 0.3rem 1rem; font-size: 0.7rem; flex-wrap: wrap; }
+      .system-status-bar .status-item .indicator { width: 8px; height: 8px; }
+    }
+
     /* ========== DASHBOARD ========== */
     .dashboard {
       display: none;
@@ -759,7 +815,7 @@
       margin-bottom: 0.5rem;
     }
 
-    /* ========== CARTÃO DO CLIENTE (NOVO) ========== */
+    /* ========== CARTÃO DO CLIENTE (ATUALIZADO) ========== */
     .client-card {
       background: rgba(20,20,20,0.75);
       backdrop-filter: blur(16px);
@@ -772,6 +828,7 @@
       position: relative;
       overflow: hidden;
       transition: border-color 0.3s;
+      text-align: center;
     }
     .client-card:hover {
       border-color: rgba(255,215,0,0.5);
@@ -788,7 +845,7 @@
     }
     .client-card .card-header {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
       flex-wrap: wrap;
       gap: 0.5rem;
@@ -800,28 +857,24 @@
       font-size: 1.2rem;
       font-weight: 600;
       color: #f0f0f0;
+      width: 100%;
+      margin-bottom: 0.2rem;
     }
     .client-card .brand {
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      color: #ffd700;
+      color: #f0f0f0;
       font-weight: 700;
-      font-size: 1rem;
-    }
-    .client-card .brand i {
-      font-size: 2rem;
-      color: #1a1f71; /* azul Visa */
-      background: white;
-      border-radius: 4px;
-      padding: 2px;
+      font-size: 1.4rem;
+      letter-spacing: 0.04em;
     }
     .client-card .brand .sentinel {
       background: linear-gradient(135deg, #f0f0f0, #b31b1b);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      font-size: 1.1rem;
+      font-size: 1.4rem;
     }
     .client-card .card-body {
       margin: 0.2rem 0 0.8rem;
@@ -883,6 +936,56 @@
       .client-card .client-name { font-size: 1.3rem; }
       .client-card .balance-item .value { font-size: 1.1rem; }
       .client-card .card-footer { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* ========== UTILIZADORES ONLINE ========== */
+    .online-users-card {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.8rem;
+      background: rgba(20,20,20,0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 2rem;
+      padding: 0.8rem 1.8rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 10px 30px -12px rgba(0,0,0,0.7);
+      transition: all 0.3s;
+      text-align: center;
+      flex-wrap: wrap;
+    }
+    .online-users-card .icon {
+      font-size: 1.6rem;
+      color: #4caf50;
+    }
+    .online-users-card .count {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #f0f0f0;
+      letter-spacing: 0.02em;
+    }
+    .online-users-card .label {
+      font-size: 0.9rem;
+      color: #aaa;
+      font-weight: 400;
+    }
+    @media (max-width: 600px) {
+      .online-users-card { padding: 0.6rem 1.2rem; }
+      .online-users-card .count { font-size: 1.4rem; }
+      .online-users-card .icon { font-size: 1.2rem; }
+    }
+
+    /* ========== GRÁFICO EM TEMPO REAL ========== */
+    .chart-realtime-wrapper {
+      position: relative;
+      height: 160px;
+      width: 100%;
+    }
+    .chart-realtime-wrapper canvas {
+      width: 100% !important;
+      height: 100% !important;
     }
 
     /* ========== PÁGINA INÍCIO (HOME) ========== */
@@ -1590,6 +1693,252 @@
       cursor: pointer;
     }
 
+    /* ========== AVALIAÇÕES ========== */
+    .reviews-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      margin: 1rem 0 1.5rem;
+    }
+    .review-item {
+      background: rgba(20,20,20,0.5);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 1.8rem;
+      padding: 1.2rem 1.5rem;
+      transition: all 0.3s;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .review-item:hover {
+      border-color: rgba(179,27,27,0.2);
+    }
+    .review-item .review-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .review-item .review-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #b31b1b, #6b1010);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .review-item .review-user {
+      flex: 1;
+    }
+    .review-item .review-user .name {
+      font-weight: 600;
+      color: #f0f0f0;
+      font-size: 1rem;
+    }
+    .review-item .review-user .province {
+      font-size: 0.75rem;
+      color: #aaa;
+      margin-top: 0.1rem;
+    }
+    .review-item .review-user .province i {
+      color: #b31b1b;
+      margin-right: 0.2rem;
+    }
+    .review-item .review-text {
+      color: #d0d0d0;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin: 0.2rem 0;
+    }
+    .review-item .review-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      border-top: 1px solid rgba(255,255,255,0.04);
+      padding-top: 0.6rem;
+      margin-top: 0.2rem;
+    }
+    .review-item .review-footer .like-btn {
+      background: transparent;
+      border: none;
+      color: #888;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 2rem;
+    }
+    .review-item .review-footer .like-btn:hover {
+      color: #b31b1b;
+    }
+    .review-item .review-footer .like-btn.liked {
+      color: #b31b1b;
+    }
+    .review-item .review-footer .like-btn .count {
+      font-weight: 600;
+      min-width: 1.2rem;
+    }
+    .review-item .review-footer .review-time {
+      font-size: 0.7rem;
+      color: #666;
+    }
+
+    .review-form {
+      background: rgba(15,15,15,0.5);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 2rem;
+      padding: 1.5rem;
+      border: 1px solid rgba(255,255,255,0.04);
+      margin-top: 1.5rem;
+    }
+    .review-form .form-group {
+      margin-bottom: 1rem;
+    }
+    .review-form .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      color: #ccc;
+      margin-bottom: 0.3rem;
+      font-weight: 500;
+    }
+    .review-form .form-group input,
+    .review-form .form-group textarea {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 1.5rem;
+      padding: 0.8rem 1.2rem;
+      font-size: 0.95rem;
+      color: #fff;
+      outline: none;
+      transition: 0.2s;
+      width: 100%;
+      font-family: inherit;
+    }
+    .review-form .form-group input:focus,
+    .review-form .form-group textarea:focus {
+      border-color: #b31b1b;
+      background: rgba(255,255,255,0.07);
+    }
+    .review-form .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+      border-radius: 1.5rem;
+    }
+    .review-form .btn-publicar {
+      background: #b31b1b;
+      border: none;
+      padding: 0.8rem 2.5rem;
+      border-radius: 3rem;
+      font-weight: 600;
+      color: #fff;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 8px 20px -6px rgba(179,27,27,0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .review-form .btn-publicar:hover {
+      background: #9e1717;
+      transform: scale(1.02);
+    }
+    .review-form .btn-publicar:active {
+      transform: scale(0.96);
+    }
+
+    /* ========== TOASTS DE NOTIFICAÇÃO ========== */
+    .toast-container {
+      position: fixed;
+      bottom: 5rem;
+      right: 1.5rem;
+      z-index: 500;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      max-width: 360px;
+      width: 100%;
+      pointer-events: none;
+    }
+    .toast-notification {
+      background: rgba(15,15,15,0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 1.5rem;
+      padding: 0.9rem 1.2rem;
+      box-shadow: 0 15px 40px -10px rgba(0,0,0,0.8);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+      animation: slideInToast 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+      pointer-events: auto;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .toast-notification.removing {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    .toast-notification .toast-icon {
+      font-size: 1.6rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+    .toast-notification .toast-icon.success { color: #4caf50; }
+    .toast-notification .toast-icon.info { color: #42a5f5; }
+    .toast-notification .toast-icon.warning { color: #ffca28; }
+    .toast-notification .toast-content {
+      flex: 1;
+    }
+    .toast-notification .toast-content .toast-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #f0f0f0;
+    }
+    .toast-notification .toast-content .toast-desc {
+      font-size: 0.8rem;
+      color: #aaa;
+      margin-top: 0.1rem;
+    }
+    .toast-notification .toast-close {
+      background: transparent;
+      border: none;
+      color: #666;
+      font-size: 0.9rem;
+      cursor: pointer;
+      padding: 0.1rem;
+      flex-shrink: 0;
+    }
+    .toast-notification .toast-close:hover {
+      color: #f0f0f0;
+    }
+    @keyframes slideInToast {
+      0% { transform: translateX(80px); opacity: 0; }
+      100% { transform: translateX(0); opacity: 1; }
+    }
+    @media (max-width: 600px) {
+      .toast-container {
+        bottom: 5.5rem;
+        right: 0.8rem;
+        left: 0.8rem;
+        max-width: 100%;
+      }
+      .toast-notification { padding: 0.8rem 1rem; }
+    }
+
     /* ========== RESPONSIVIDADE ========== */
     @media (max-width: 600px) {
       .login-box, .register-box { padding: 2rem 1.2rem; }
@@ -1612,7 +1961,6 @@
       scrollbar-color: #b31b1b transparent;
     }
 
-    /* Estilo extra para o texto informativo no pagamento */
     .payment-info-text {
       color: #ccc;
       font-size: 0.9rem;
@@ -1623,6 +1971,32 @@
     }
     .payment-info-text strong {
       color: #f0f0f0;
+    }
+
+    /* ========== MELHORIAS VISUAIS GERAIS ========== */
+    .card, .client-card, .online-users-card, .review-item, .review-form {
+      transition: all 0.3s ease;
+    }
+    .page-container {
+      padding-bottom: 5.5rem;
+    }
+    .app-bar .title {
+      font-weight: 700;
+    }
+    .hero-home h1 {
+      letter-spacing: -0.02em;
+    }
+    .bottom-nav .nav-item {
+      transition: color 0.2s, transform 0.15s;
+    }
+    .btn, .btn-pagamento, .btn-whatsapp-app, .btn-install, .btn-publicar {
+      transition: all 0.2s ease;
+    }
+    .btn:active, .btn-pagamento:active, .btn-whatsapp-app:active, .btn-install:active, .btn-publicar:active {
+      transform: scale(0.94);
+    }
+    .review-item .review-footer .like-btn {
+      transition: all 0.2s ease;
     }
   </style>
 </head>
@@ -1654,6 +2028,18 @@
 
 <!-- ========== APP ========== -->
 <div class="app" id="app">
+
+  <!-- ===== BARRA DE ESTADO DO SISTEMA ===== -->
+  <div class="system-status-bar" id="systemStatusBar">
+    <div class="status-item">
+      <span class="indicator" id="statusIndicator"></span>
+      <span class="status-label" id="statusLabel">Sistema Online</span>
+    </div>
+    <div class="status-item">
+      <i class="fas fa-clock" style="color:#666;font-size:0.8rem;"></i>
+      <span class="status-time" id="statusTime">--:--</span>
+    </div>
+  </div>
 
   <!-- ===== TELA DE LOGIN ===== -->
   <div class="login-screen" id="loginScreen">
@@ -1773,12 +2159,11 @@
 
       <!-- ===== PÁGINA DASHBOARD ===== -->
       <div class="page active" id="pageDashboard">
-        <!-- CARTÃO DO CLIENTE (substitui a grelha de estatísticas) -->
+        <!-- CARTÃO DO CLIENTE (atualizado) -->
         <div class="client-card" id="clientCard">
           <div class="card-header">
             <span class="greeting" id="greetingText">Olá, Utilizador!</span>
             <span class="brand">
-              <i class="fab fa-cc-visa"></i>
               <span class="sentinel">SENTINELA</span>
             </span>
           </div>
@@ -1806,6 +2191,21 @@
           </div>
         </div>
 
+        <!-- INDICADOR DE UTILIZADORES ONLINE -->
+        <div class="online-users-card">
+          <span class="icon"><i class="fas fa-users"></i></span>
+          <span class="count" id="onlineUsersCount">42</span>
+          <span class="label">Utilizadores Online</span>
+        </div>
+
+        <!-- GRÁFICO FINANCEIRO EM TEMPO REAL -->
+        <div class="card">
+          <div class="card-title">Movimentação Diária <span style="font-weight:400;font-size:0.8rem;color:#888;">(tempo real)</span></div>
+          <div class="chart-realtime-wrapper">
+            <canvas id="chartRealtime"></canvas>
+          </div>
+        </div>
+
         <div class="card">
           <div class="card-title">Evolução do saldo</div>
           <div class="chart-container"><canvas id="chartSaldo"></canvas></div>
@@ -1816,7 +2216,7 @@
         </div>
       </div>
 
-      <!-- ===== PÁGINA INÍCIO (original) ===== -->
+      <!-- ===== PÁGINA INÍCIO (HOME) ===== -->
       <div class="page" id="pageHome">
         <div class="hero-home">
           <h1>Bem-vindo à SENTINELA</h1>
@@ -1874,12 +2274,10 @@
           </div>
           <div class="row"><span class="label">Número</span><span class="value highlight" id="paymentNumber">877 426 441</span></div>
           <div class="row"><span class="label">Nome</span><span class="value">EUSÉBIO DOS SANTOS</span></div>
-          <!-- Botão copiar -->
           <div style="margin: 0.5rem 0;">
             <button class="btn btn-copiar" id="btnCopiarNumero"><i class="fas fa-copy"></i> 📋 Copiar Número de Pagamento</button>
             <div id="toastCopiar" style="display: none;" class="toast-copy">✅ Número copiado com sucesso.</div>
           </div>
-          <!-- Opções de pagamento -->
           <div class="payment-actions-app">
             <button class="btn-pagamento btn-mpesa" id="btnMpesa">
               <i class="fas fa-mobile-alt"></i> M-Pesa
@@ -1889,14 +2287,12 @@
             </button>
           </div>
 
-          <!-- NOVO: Texto informativo e botão para enviar comprovativo -->
           <div class="payment-info-text">
             <strong>Após efetuar o seu depósito de investimento, clique no botão abaixo para enviar o comprovativo do depósito ao nosso atendimento. A confirmação do comprovativo permitirá a validação mais rápida do seu investimento.</strong>
           </div>
           <button class="btn-whatsapp-app" id="btnEnviarComprovativo"><i class="fab fa-whatsapp"></i> 📤 Enviar Comprovativo no WhatsApp</button>
         </div>
 
-        <!-- Área antiga do WhatsApp (mantida, mas agora redundante; pode ser removida se desejar, mas mantive para não alterar o que não foi pedido) -->
         <div id="whatsappAreaApp" class="hidden" style="margin-top:1rem; text-align:center; background:rgba(0,0,0,0.2); padding:1rem; border-radius:2rem; border:1px solid rgba(255,255,255,0.03);">
           <p style="color:#ccc; margin-bottom:0.8rem;"><i class="fas fa-paper-plane" style="color:#25D366;"></i> Envie o comprovativo pelo WhatsApp</p>
           <button class="btn-whatsapp-app" id="btnWhatsappApp"><i class="fab fa-whatsapp"></i> Enviar comprovativo</button>
@@ -1986,6 +2382,30 @@
         </div>
       </div>
 
+      <!-- ===== PÁGINA AVALIAÇÕES ===== -->
+      <div class="page" id="pageReviews">
+        <h3 style="margin-bottom:0.5rem; font-weight:500;">Avaliações dos Clientes</h3>
+        <p style="color:#aaa; font-size:0.9rem; margin-bottom:1.5rem;">O que os nossos clientes dizem sobre a SENTINELA</p>
+        <div id="reviewsContainer" class="reviews-grid"></div>
+
+        <div class="review-form">
+          <h4 style="font-weight:500; margin-bottom:1rem;">Publique a sua avaliação</h4>
+          <div class="form-group">
+            <label>Seu nome</label>
+            <input type="text" id="reviewName" placeholder="Ex: Joaquim Silva">
+          </div>
+          <div class="form-group">
+            <label>Província</label>
+            <input type="text" id="reviewProvince" placeholder="Ex: Maputo, Nampula, Beira...">
+          </div>
+          <div class="form-group">
+            <label>Comentário</label>
+            <textarea id="reviewComment" placeholder="Partilhe a sua experiência com a SENTINELA..."></textarea>
+          </div>
+          <button class="btn-publicar" id="btnPublicarReview"><i class="fas fa-pen"></i> Publicar Avaliação</button>
+        </div>
+      </div>
+
     </div>
 
     <!-- Bottom Navigation -->
@@ -2013,9 +2433,13 @@
   <button class="menu-item" data-page="pageNotif"><i class="fas fa-bell"></i> Notificações</button>
   <button class="menu-item" data-page="pageProfile"><i class="fas fa-user"></i> Perfil</button>
   <button class="menu-item" data-page="pageStats"><i class="fas fa-chart-bar"></i> Estatísticas</button>
+  <button class="menu-item" data-page="pageReviews"><i class="fas fa-star"></i> Avaliações</button>
   <button class="menu-item" data-page="pageHelp"><i class="fas fa-question-circle"></i> Ajuda</button>
   <button class="menu-item logout" id="menuLogout"><i class="fas fa-sign-out-alt"></i> Terminar Sessão</button>
 </div>
+
+<!-- ===== TOAST CONTAINER (notificações em tempo real) ===== -->
+<div class="toast-container" id="toastContainer"></div>
 
 <script>
   (function() {
@@ -2067,7 +2491,8 @@
       notif: document.getElementById('pageNotif'),
       profile: document.getElementById('pageProfile'),
       stats: document.getElementById('pageStats'),
-      help: document.getElementById('pageHelp')
+      help: document.getElementById('pageHelp'),
+      reviews: document.getElementById('pageReviews')
     };
     const appBarTitle = document.getElementById('appBarTitle');
 
@@ -2341,14 +2766,15 @@
           const nome = user.name;
           const telefone = user.phone;
           // Atualizar perfil
+          const firstName = nome.split(' ')[0] || nome;
           profileName.textContent = nome;
           const clientIdStr = 'Cliente #' + telefone.replace(/\D/g, '').slice(0,6);
           profileClientId.textContent = clientIdStr;
           profilePhone.textContent = telefone;
           profileAvatar.textContent = nome.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
           menuUser.textContent = nome;
-          // Atualizar cartão
-          greetingText.textContent = 'Olá, ' + nome + '!';
+          // Atualizar cartão (apenas primeiro nome na saudação)
+          greetingText.textContent = 'Olá, ' + firstName + '!';
           clientName.textContent = nome;
           clientId.textContent = clientIdStr;
           // Atualizar nível
@@ -2361,6 +2787,11 @@
           initWallet();
           initNotifications();
           initFeed();
+          initReviews();
+          iniciarNotificacoesRealtime();
+          iniciarOnlineUsers();
+          iniciarGraficoRealtime();
+          iniciarBarraEstado();
           navegarPara('pageDashboard');
           document.getElementById('pageContainer').scrollTop = 0;
         }
@@ -2385,7 +2816,8 @@
         pageNotif: 'Notificações',
         pageProfile: 'Perfil',
         pageStats: 'Estatísticas',
-        pageHelp: 'Ajuda'
+        pageHelp: 'Ajuda',
+        pageReviews: 'Avaliações'
       };
       appBarTitle.textContent = nomes[pageId] || 'SENTINELA';
       document.getElementById('pageContainer').scrollTop = 0;
@@ -2492,7 +2924,7 @@
       playSound('notif');
     });
 
-    // ========== ENVIAR COMPROVATIVO (novo botão) ==========
+    // ========== ENVIAR COMPROVATIVO ==========
     function abrirWhatsAppComprovativo() {
       const numero = '258877426441';
       const msg = encodeURIComponent('Olá, efetuei o meu investimento na plataforma SENTINELA e estou a enviar o comprovativo de pagamento para validação.');
@@ -2501,7 +2933,7 @@
     }
 
     btnEnviarComprovativo.addEventListener('click', abrirWhatsAppComprovativo);
-    btnWhatsapp.addEventListener('click', abrirWhatsAppComprovativo); // mantido para compatibilidade
+    btnWhatsapp.addEventListener('click', abrirWhatsAppComprovativo);
 
     // ========== SAIR ==========
     function logout() {
@@ -2517,6 +2949,12 @@
         document.getElementById('pageContainer').scrollTop = 0;
         showLogin();
         closeMenu();
+        // Limpar intervalos
+        if (window._onlineInterval) clearInterval(window._onlineInterval);
+        if (window._chartInterval) clearInterval(window._chartInterval);
+        if (window._notifInterval) clearTimeout(window._notifInterval);
+        if (window._statusInterval) clearInterval(window._statusInterval);
+        if (window._likeInterval) clearInterval(window._likeInterval);
       }
     }
 
@@ -2564,7 +3002,7 @@
     }
 
     // ========== GRÁFICOS ==========
-    let chartSaldo, chartStatsSaldo, chartStatsInvest, chartStatsLucro;
+    let chartSaldo, chartStatsSaldo, chartStatsInvest, chartStatsLucro, chartRealtime;
 
     function initCharts() {
       const ctxSaldo = document.getElementById('chartSaldo').getContext('2d');
@@ -2638,6 +3076,160 @@
         },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#aaa' } } }, scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' } }, y: { grid: { color: 'rgba(255,255,255,0.05)' } } } }
       });
+
+      // Gráfico em tempo real
+      const ctxRealtime = document.getElementById('chartRealtime').getContext('2d');
+      chartRealtime = new Chart(ctxRealtime, {
+        type: 'line',
+        data: {
+          labels: Array.from({length: 20}, (_,i) => i+1),
+          datasets: [{
+            label: 'Movimentação (MZN)',
+            data: Array.from({length: 20}, () => Math.floor(Math.random() * 3000 + 1000)),
+            borderColor: '#b31b1b',
+            backgroundColor: 'rgba(179,27,27,0.08)',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 2,
+            pointBackgroundColor: '#b31b1b'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: { backgroundColor: 'rgba(0,0,0,0.8)', titleColor: '#fff', bodyColor: '#ccc' }
+          },
+          scales: {
+            x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#888', maxTicksLimit: 10 } },
+            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#888' } }
+          },
+          animation: { duration: 300 }
+        }
+      });
+    }
+
+    // ========== GRÁFICO EM TEMPO REAL ==========
+    function iniciarGraficoRealtime() {
+      if (window._chartInterval) clearInterval(window._chartInterval);
+      window._chartInterval = setInterval(() => {
+        if (!chartRealtime || !document.getElementById('pageDashboard').classList.contains('active')) return;
+        const newData = chartRealtime.data.datasets[0].data;
+        newData.shift();
+        newData.push(Math.floor(Math.random() * 3000 + 1000));
+        chartRealtime.update('none');
+      }, 3000);
+    }
+
+    // ========== UTILIZADORES ONLINE ==========
+    let onlineUsers = 42;
+
+    function iniciarOnlineUsers() {
+      if (window._onlineInterval) clearInterval(window._onlineInterval);
+      window._onlineInterval = setInterval(() => {
+        const delta = Math.random() > 0.5 ? 1 : -1;
+        let change = Math.floor(Math.random() * 2) + 2;
+        change = change * delta;
+        onlineUsers = Math.min(160, Math.max(20, onlineUsers + change));
+        document.getElementById('onlineUsersCount').textContent = onlineUsers;
+      }, 5000 + Math.random() * 4000);
+    }
+
+    // ========== NOTIFICAÇÕES EM TEMPO REAL ==========
+    const nomesMocambicanos = [
+      'Eusébio', 'Joaquim', 'Maria', 'José', 'Ana', 'Manuel', 'Helena', 'Carlos',
+      'Amélia', 'Fernando', 'Isabel', 'António', 'Cristina', 'Paulo', 'Sónia',
+      'Rui', 'Dulce', 'Geraldino', 'Lúcia', 'Orlando', 'Graça', 'Valter', 'Zefanias'
+    ];
+    const valoresInvest = [1000, 1500, 2000, 2500, 3000, 4000, 5000, 6000, 8000, 10000];
+    const mensagensNotif = [
+      (nome, valor) => `${nome} iniciou um investimento de ${valor} MZN.`,
+      (nome, valor) => `${nome} recebeu rendimentos de ${valor} MZN.`,
+      (nome, valor) => `${nome} confirmou um depósito de ${valor} MZN.`,
+      (nome, valor) => `${nome} obteve lucro de ${valor} MZN no Trader.`,
+      (nome, valor) => `${nome} resgatou ${valor} MZN com sucesso.`
+    ];
+
+    function iniciarNotificacoesRealtime() {
+      if (window._notifInterval) clearTimeout(window._notifInterval);
+      agendarNotificacao();
+    }
+
+    function agendarNotificacao() {
+      const delay = 12000 + Math.random() * 18000;
+      window._notifInterval = setTimeout(() => {
+        if (!dashboard.classList.contains('active')) {
+          agendarNotificacao();
+          return;
+        }
+        const nome = nomesMocambicanos[Math.floor(Math.random() * nomesMocambicanos.length)];
+        const valor = valoresInvest[Math.floor(Math.random() * valoresInvest.length)];
+        const msgIndex = Math.floor(Math.random() * mensagensNotif.length);
+        const msg = mensagensNotif[msgIndex](nome, valor.toLocaleString());
+        const tipo = msgIndex === 0 ? 'novo-investimento' : (msgIndex === 1 ? 'rendimento' : 'deposito');
+        mostrarToast(msg, tipo);
+        playSound('notif');
+        agendarNotificacao();
+      }, delay);
+    }
+
+    function mostrarToast(mensagem, tipo) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast-notification';
+      const iconMap = {
+        'novo-investimento': { icon: 'fa-chart-line', color: 'info' },
+        'rendimento': { icon: 'fa-coins', color: 'success' },
+        'deposito': { icon: 'fa-credit-card', color: 'warning' }
+      };
+      const iconData = iconMap[tipo] || iconMap['novo-investimento'];
+      const iconClass = `toast-icon ${iconData.color}`;
+      toast.innerHTML = `
+        <span class="${iconClass}"><i class="fas ${iconData.icon}"></i></span>
+        <div class="toast-content">
+          <div class="toast-title">SENTINELA</div>
+          <div class="toast-desc">${mensagem}</div>
+        </div>
+        <button class="toast-close"><i class="fas fa-times"></i></button>
+      `;
+      container.appendChild(toast);
+      const closeBtn = toast.querySelector('.toast-close');
+      closeBtn.addEventListener('click', () => {
+        toast.classList.add('removing');
+        setTimeout(() => toast.remove(), 400);
+      });
+      setTimeout(() => {
+        toast.classList.add('removing');
+        setTimeout(() => toast.remove(), 400);
+      }, 7000);
+    }
+
+    // ========== BARRA DE ESTADO DO SISTEMA ==========
+    function iniciarBarraEstado() {
+      atualizarStatus();
+      if (window._statusInterval) clearInterval(window._statusInterval);
+      window._statusInterval = setInterval(atualizarStatus, 30000);
+    }
+
+    function atualizarStatus() {
+      const now = new Date();
+      const horas = now.getHours();
+      const minutos = now.getMinutes();
+      const online = horas >= 6 && horas < 23;
+      const indicator = document.getElementById('statusIndicator');
+      const label = document.getElementById('statusLabel');
+      const timeEl = document.getElementById('statusTime');
+      if (online) {
+        indicator.className = 'indicator online';
+        label.textContent = 'Sistema Online';
+      } else {
+        indicator.className = 'indicator offline';
+        label.textContent = 'Sistema Offline';
+      }
+      const hh = String(horas).padStart(2, '0');
+      const mm = String(minutos).padStart(2, '0');
+      timeEl.textContent = `${hh}:${mm} (hora local)`;
     }
 
     // ========== HISTÓRICO ==========
@@ -2675,7 +3267,7 @@
       `;
     }
 
-    // ========== NOTIFICAÇÕES ==========
+    // ========== NOTIFICAÇÕES (página) ==========
     function initNotifications() {
       const container = document.getElementById('notifContainer');
       const notifs = [
@@ -2738,6 +3330,147 @@
           icon.className = 'fas fa-chevron-down';
         }
       });
+    });
+
+    // ========== AVALIAÇÕES DOS CLIENTES ==========
+    const fotosPerfil = [
+      '👨‍💼', '👩‍💼', '👨‍🔧', '👩‍🔬', '👨‍🏫', '👩‍🌾', '👨‍🎓', '👩‍💻', '👨‍⚖️', '👩‍✈️',
+      '🧑‍💼', '🧑‍🔧', '🧑‍🏫', '🧑‍🌾', '🧑‍🎓', '🧑‍💻', '🧑‍⚖️'
+    ];
+
+    const provinciasMocambique = [
+      'Maputo', 'Maputo Província', 'Gaza', 'Inhambane', 'Manica', 'Sofala',
+      'Tete', 'Zambézia', 'Nampula', 'Cabo Delgado', 'Niassa', 'Beira', 'Matola'
+    ];
+
+    const comentariosMock = [
+      { nome: 'Eusébio dos Santos', provincia: 'Maputo', comentario: 'Plataforma excelente! Já consegui bons retornos com o Aviator. Recomendo a todos que querem investir com segurança.', likes: 56 },
+      { nome: 'Maria da Luz', provincia: 'Nampula', comentario: 'A SENTINELA mudou a minha vida financeira. Recebo os meus rendimentos sempre a tempo. Muito obrigada!', likes: 31 },
+      { nome: 'Carlos Macie', provincia: 'Beira', comentario: 'Interface intuitiva e suporte rápido. O sistema de simulação ajuda a tomar decisões acertadas.', likes: 74 },
+      { nome: 'Ana Raquel', provincia: 'Manica', comentario: 'Sou cliente há 3 meses e já obtive lucros significativos. Plataforma de confiança!', likes: 18 },
+      { nome: 'João Sitoe', provincia: 'Gaza', comentario: 'O Trader é fantástico. As análises são precisas. Já recomendei a vários amigos.', likes: 42 },
+      { nome: 'Helena Maposse', provincia: 'Tete', comentario: 'A SENTINELA oferece uma experiência premium. O suporte é atencioso e os pagamentos são rápidos.', likes: 27 },
+      { nome: 'Fernando Muianga', provincia: 'Inhambane', comentario: 'Comecei com pouco e já tenho um bom capital. A plataforma é segura e fácil de usar.', likes: 63 }
+    ];
+
+    let reviews = [];
+
+    function initReviews() {
+      const stored = localStorage.getItem('sentinel_reviews');
+      if (stored) {
+        try {
+          reviews = JSON.parse(stored);
+        } catch (e) {
+          reviews = [];
+        }
+      }
+      if (!reviews || reviews.length === 0) {
+        reviews = comentariosMock.map((c, i) => ({
+          id: Date.now() + i,
+          nome: c.nome,
+          provincia: c.provincia,
+          comentario: c.comentario,
+          likes: c.likes,
+          timestamp: Date.now() - i * 86400000
+        }));
+        localStorage.setItem('sentinel_reviews', JSON.stringify(reviews));
+      }
+      renderReviews();
+      iniciarLikeAuto();
+    }
+
+    function renderReviews() {
+      const container = document.getElementById('reviewsContainer');
+      if (!container) return;
+      container.innerHTML = reviews.map(r => {
+        const avatar = r.nome.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+        const timeAgo = tempoRelativo(r.timestamp);
+        return `
+          <div class="review-item" data-id="${r.id}">
+            <div class="review-header">
+              <div class="review-avatar">${avatar}</div>
+              <div class="review-user">
+                <div class="name">${r.nome}</div>
+                <div class="province"><i class="fas fa-map-pin"></i> ${r.provincia}</div>
+              </div>
+            </div>
+            <div class="review-text">${r.comentario}</div>
+            <div class="review-footer">
+              <button class="like-btn" data-id="${r.id}">
+                <i class="fas fa-heart"></i>
+                <span class="count">${r.likes}</span>
+              </button>
+              <span class="review-time">${timeAgo}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Eventos de like
+      document.querySelectorAll('.like-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const id = parseInt(this.dataset.id);
+          const review = reviews.find(r => r.id === id);
+          if (review) {
+            review.likes += 1;
+            localStorage.setItem('sentinel_reviews', JSON.stringify(reviews));
+            renderReviews();
+          }
+        });
+      });
+    }
+
+    function tempoRelativo(timestamp) {
+      const diff = Date.now() - timestamp;
+      const mins = Math.floor(diff / 60000);
+      if (mins < 1) return 'agora mesmo';
+      if (mins < 60) return `há ${mins} min`;
+      const hrs = Math.floor(mins / 60);
+      if (hrs < 24) return `há ${hrs} h`;
+      const dias = Math.floor(hrs / 24);
+      if (dias < 7) return `há ${dias} d`;
+      return new Date(timestamp).toLocaleDateString('pt-PT');
+    }
+
+    // ========== LIKES AUTOMÁTICOS ==========
+    function iniciarLikeAuto() {
+      if (window._likeInterval) clearInterval(window._likeInterval);
+      window._likeInterval = setInterval(() => {
+        if (!dashboard.classList.contains('active')) return;
+        const ativos = reviews.filter(r => Math.random() > 0.3);
+        if (ativos.length === 0) return;
+        const review = ativos[Math.floor(Math.random() * ativos.length)];
+        review.likes += 1;
+        localStorage.setItem('sentinel_reviews', JSON.stringify(reviews));
+        renderReviews();
+      }, 20000 + Math.random() * 30000);
+    }
+
+    // ========== PUBLICAR AVALIAÇÃO ==========
+    document.getElementById('btnPublicarReview').addEventListener('click', function() {
+      const nome = document.getElementById('reviewName').value.trim();
+      const provincia = document.getElementById('reviewProvince').value.trim();
+      const comentario = document.getElementById('reviewComment').value.trim();
+      if (!nome || !provincia || !comentario) {
+        alert('Por favor, preencha todos os campos.');
+        return;
+      }
+      const newReview = {
+        id: Date.now(),
+        nome: nome,
+        provincia: provincia,
+        comentario: comentario,
+        likes: Math.floor(Math.random() * 20) + 5,
+        timestamp: Date.now()
+      };
+      reviews.unshift(newReview);
+      localStorage.setItem('sentinel_reviews', JSON.stringify(reviews));
+      renderReviews();
+      document.getElementById('reviewName').value = '';
+      document.getElementById('reviewProvince').value = '';
+      document.getElementById('reviewComment').value = '';
+      playSound('confirm');
+      mostrarToast('A sua avaliação foi publicada com sucesso! Obrigado.', 'deposito');
     });
 
     // ========== INICIALIZAÇÃO ==========
