@@ -2149,7 +2149,7 @@
         <span class="title" id="appBarTitle">Dashboard</span>
       </div>
       <div class="right">
-        <button class="icon-btn" id="notifIconBtn"><i class="fas fa-bell"></i><span class="badge">3</span></button>
+        <button class="icon-btn" id="notifIconBtn"><i class="fas fa-bell"></i><span class="badge" id="notifBadge">3</span></button>
         <button class="icon-btn" id="profileIconBtn"><i class="fas fa-user-circle"></i></button>
       </div>
     </div>
@@ -2414,6 +2414,7 @@
       <button class="nav-item" data-page="pageInvest"><i class="fas fa-chart-pie"></i><span>Investir</span></button>
       <button class="nav-item" data-page="pageWallet"><i class="fas fa-wallet"></i><span>Carteira</span></button>
       <button class="nav-item" data-page="pageHistory"><i class="fas fa-clock"></i><span>Histórico</span></button>
+      <button class="nav-item" data-page="pageReviews"><i class="fas fa-star"></i><span>Avaliações</span></button>
       <button class="nav-item" data-page="pageProfile"><i class="fas fa-user"></i><span>Perfil</span></button>
     </div>
   </div>
@@ -2479,6 +2480,7 @@
     const registerForm = document.getElementById('registerForm');
     const registerSuccess = document.getElementById('registerSuccess');
     const dashboard = document.getElementById('dashboard');
+    const notifBadge = document.getElementById('notifBadge');
 
     // Bottom nav e páginas
     const navItems = document.querySelectorAll('.nav-item');
@@ -2530,7 +2532,6 @@
     const clientId = document.getElementById('clientId');
 
     // Sair
-    const btnLogout = document.getElementById('btnLogout');
     const menuLogout = document.getElementById('menuLogout');
 
     // PWA
@@ -2958,7 +2959,6 @@
       }
     }
 
-    btnLogout.addEventListener('click', logout);
     menuLogout.addEventListener('click', logout);
 
     // ========== ATALHOS ==========
@@ -2974,6 +2974,7 @@
     let capitalInvestido = 8700;
     let lucro = 3200;
     let ativos = 4;
+    let notificacaoCount = 3;
 
     // ========== DASHBOARD ==========
     function initDashboardData() {
@@ -3157,7 +3158,7 @@
     }
 
     function agendarNotificacao() {
-      const delay = 12000 + Math.random() * 18000;
+      const delay = 8000 + Math.random() * 12000; // entre 8 e 20 segundos
       window._notifInterval = setTimeout(() => {
         if (!dashboard.classList.contains('active')) {
           agendarNotificacao();
@@ -3170,6 +3171,9 @@
         const tipo = msgIndex === 0 ? 'novo-investimento' : (msgIndex === 1 ? 'rendimento' : 'deposito');
         mostrarToast(msg, tipo);
         playSound('notif');
+        // Incrementar badge
+        notificacaoCount++;
+        notifBadge.textContent = notificacaoCount;
         agendarNotificacao();
       }, delay);
     }
@@ -3209,7 +3213,7 @@
     function iniciarBarraEstado() {
       atualizarStatus();
       if (window._statusInterval) clearInterval(window._statusInterval);
-      window._statusInterval = setInterval(atualizarStatus, 30000);
+      window._statusInterval = setInterval(atualizarStatus, 60000); // a cada minuto
     }
 
     function atualizarStatus() {
@@ -3283,6 +3287,7 @@
           <div class="time">${n.time}</div>
         </div>
       `).join('');
+      notifBadge.textContent = notifs.length + notificacaoCount;
     }
 
     // ========== FEED ==========
