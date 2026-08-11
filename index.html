@@ -816,6 +816,22 @@
     }
 
     /* ========== CARTÃO DO CLIENTE (ATUALIZADO) ========== */
+    .greeting-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      padding: 0 0.2rem;
+    }
+    .greeting-wrapper .greeting-text {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #f0f0f0;
+    }
+    .greeting-wrapper .greeting-emoji {
+      font-size: 1.8rem;
+    }
+
     .client-card {
       background: rgba(20,20,20,0.75);
       backdrop-filter: blur(16px);
@@ -828,7 +844,9 @@
       position: relative;
       overflow: hidden;
       transition: border-color 0.3s;
-      text-align: center;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
     }
     .client-card:hover {
       border-color: rgba(255,215,0,0.5);
@@ -845,20 +863,13 @@
     }
     .client-card .card-header {
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
       gap: 0.5rem;
       margin-bottom: 0.2rem;
       position: relative;
       z-index: 1;
-    }
-    .client-card .greeting {
-      font-size: 1.2rem;
-      font-weight: 600;
-      color: #f0f0f0;
-      width: 100%;
-      margin-bottom: 0.2rem;
     }
     .client-card .brand {
       display: flex;
@@ -880,12 +891,20 @@
       margin: 0.2rem 0 0.8rem;
       position: relative;
       z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
     }
     .client-card .client-name {
       font-size: 1.6rem;
       font-weight: 700;
       color: #fff;
       line-height: 1.2;
+    }
+    .client-card .client-phone {
+      font-size: 0.95rem;
+      color: #ccc;
+      letter-spacing: 0.03em;
     }
     .client-card .client-id {
       font-size: 0.9rem;
@@ -931,11 +950,35 @@
       color: #ffd700;
       margin-top: 0.2rem;
     }
+
+    .profile-avatar-card {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #b31b1b, #6b1010);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      color: #fff;
+      font-weight: 600;
+      flex-shrink: 0;
+      overflow: hidden;
+      border: 2px solid rgba(255,215,0,0.3);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+    .profile-avatar-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
     @media (max-width: 600px) {
-      .client-card .greeting { font-size: 1rem; }
+      .greeting-wrapper .greeting-text { font-size: 1.2rem; }
       .client-card .client-name { font-size: 1.3rem; }
       .client-card .balance-item .value { font-size: 1.1rem; }
       .client-card .card-footer { grid-template-columns: 1fr 1fr; }
+      .profile-avatar-card { width: 50px; height: 50px; font-size: 1.5rem; }
     }
 
     /* ========== UTILIZADORES ONLINE ========== */
@@ -1445,6 +1488,13 @@
       font-weight: 600;
       box-shadow: 0 8px 20px rgba(179,27,27,0.3);
       flex-shrink: 0;
+      overflow: hidden;
+      border: 2px solid rgba(255,215,0,0.2);
+    }
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
     .profile-info {
       flex: 1;
@@ -1488,6 +1538,31 @@
       color: #4caf50;
     }
 
+    .profile-upload {
+      margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .profile-upload label {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 2rem;
+      padding: 0.5rem 1.2rem;
+      cursor: pointer;
+      transition: 0.2s;
+      color: #ccc;
+      font-size: 0.9rem;
+    }
+    .profile-upload label:hover {
+      background: rgba(179,27,27,0.1);
+      border-color: #b31b1b;
+    }
+    .profile-upload input[type="file"] {
+      display: none;
+    }
+
     /* ========== FEED ========== */
     .feed-item {
       display: flex;
@@ -1520,6 +1595,57 @@
     .feed-item .time {
       font-size: 0.7rem;
       color: #666;
+    }
+
+    /* ========== AVALIAÇÕES NO DASHBOARD ========== */
+    .reviews-dash-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .reviews-dash-item .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(179,27,27,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #b31b1b;
+      flex-shrink: 0;
+    }
+    .reviews-dash-item .content {
+      flex: 1;
+    }
+    .reviews-dash-item .content .name {
+      font-weight: 500;
+      color: #eee;
+      font-size: 0.9rem;
+    }
+    .reviews-dash-item .content .text {
+      font-size: 0.85rem;
+      color: #bbb;
+      margin-top: 0.1rem;
+    }
+    .reviews-dash-item .content .meta {
+      font-size: 0.7rem;
+      color: #666;
+      margin-top: 0.2rem;
+    }
+    .reviews-dash-ver-todas {
+      display: inline-block;
+      margin-top: 0.5rem;
+      color: #b31b1b;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .reviews-dash-ver-todas:hover {
+      color: #e04040;
     }
 
     /* ========== AJUDA ========== */
@@ -1998,6 +2124,23 @@
     .review-item .review-footer .like-btn {
       transition: all 0.2s ease;
     }
+
+    /* ========== HISTÓRICO VAZIO ========== */
+    .history-empty {
+      color: #888;
+      font-size: 0.95rem;
+      text-align: center;
+      padding: 2rem 0;
+      border-radius: 1.5rem;
+      background: rgba(255,255,255,0.02);
+      border: 1px dashed rgba(255,255,255,0.06);
+    }
+    .history-empty i {
+      font-size: 2.5rem;
+      color: #555;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -2159,16 +2302,24 @@
 
       <!-- ===== PÁGINA DASHBOARD ===== -->
       <div class="page active" id="pageDashboard">
+        <!-- SAUDAÇÃO ACIMA DO CARTÃO -->
+        <div class="greeting-wrapper">
+          <span class="greeting-text" id="greetingText">Olá, Utilizador! 👋</span>
+        </div>
+
         <!-- CARTÃO DO CLIENTE (atualizado) -->
         <div class="client-card" id="clientCard">
           <div class="card-header">
-            <span class="greeting" id="greetingText">Olá, Utilizador!</span>
             <span class="brand">
               <span class="sentinel">SENTINELA</span>
             </span>
+            <div class="profile-avatar-card" id="clientAvatarCard">
+              <span id="avatarPlaceholder">JM</span>
+            </div>
           </div>
           <div class="card-body">
             <div class="client-name" id="clientName">Utilizador</div>
+            <div class="client-phone" id="clientPhone">—</div>
             <div class="client-id" id="clientId">Cliente Nº 000000</div>
           </div>
           <div class="card-footer">
@@ -2207,12 +2358,19 @@
         </div>
 
         <div class="card">
-          <div class="card-title">Evolução do saldo</div>
+          <div class="card-title">Evolução do saldo (sistema SENTINELA)</div>
           <div class="chart-container"><canvas id="chartSaldo"></canvas></div>
         </div>
         <div class="card">
           <div class="card-title">Atividades recentes</div>
           <div id="feedContainer"></div>
+        </div>
+
+        <!-- SEÇÃO DE AVALIAÇÕES NO DASHBOARD -->
+        <div class="card" id="reviewsDashCard">
+          <div class="card-title">Avaliações dos Clientes</div>
+          <div id="reviewsDashContainer"></div>
+          <span class="reviews-dash-ver-todas" id="verTodasReviewsDash">Ver todas as avaliações →</span>
         </div>
       </div>
 
@@ -2329,7 +2487,9 @@
       <!-- ===== PÁGINA PERFIL ===== -->
       <div class="page" id="pageProfile">
         <div class="profile-header">
-          <div class="profile-avatar" id="profileAvatar">JM</div>
+          <div class="profile-avatar" id="profileAvatar">
+            <span id="profileAvatarPlaceholder">JM</span>
+          </div>
           <div class="profile-info">
             <div class="name" id="profileName">Utilizador</div>
             <div class="client-id" id="profileClientId">Cliente #000000</div>
@@ -2343,21 +2503,29 @@
           <div class="profile-detail"><span class="label">Conta Verificada</span><span class="value verified"><i class="fas fa-check-circle"></i> Sim</span></div>
           <div class="profile-detail"><span class="label">Nível</span><span class="value" id="profileLevelDetail">🥉 Bronze</span></div>
         </div>
+        <div class="card">
+          <div class="card-title">Foto de Perfil</div>
+          <div class="profile-upload">
+            <label for="uploadFotoPerfil"><i class="fas fa-camera"></i> Alterar foto</label>
+            <input type="file" id="uploadFotoPerfil" accept="image/*">
+            <button class="btn btn-outline" id="btnRemoverFoto" style="flex:0;">Remover foto</button>
+          </div>
+        </div>
       </div>
 
       <!-- ===== PÁGINA ESTATÍSTICAS ===== -->
       <div class="page" id="pageStats">
         <h3 style="margin-bottom:1rem; font-weight:500;">Estatísticas</h3>
         <div class="card">
-          <div class="card-title">Evolução do saldo</div>
+          <div class="card-title">Evolução do saldo (sistema SENTINELA)</div>
           <div class="chart-container"><canvas id="chartStatsSaldo"></canvas></div>
         </div>
         <div class="card">
-          <div class="card-title">Evolução dos investimentos</div>
+          <div class="card-title">Evolução dos investimentos (sistema)</div>
           <div class="chart-container"><canvas id="chartStatsInvest"></canvas></div>
         </div>
         <div class="card">
-          <div class="card-title">Lucro acumulado mensal</div>
+          <div class="card-title">Lucro acumulado mensal (sistema)</div>
           <div class="chart-container"><canvas id="chartStatsLucro"></canvas></div>
         </div>
       </div>
@@ -2525,11 +2693,19 @@
     const profileClientId = document.getElementById('profileClientId');
     const profilePhone = document.getElementById('profilePhone');
     const profileAvatar = document.getElementById('profileAvatar');
+    const profileAvatarPlaceholder = document.getElementById('profileAvatarPlaceholder');
     const profileLevel = document.getElementById('profileLevel');
     const profileLevelDetail = document.getElementById('profileLevelDetail');
     const greetingText = document.getElementById('greetingText');
     const clientName = document.getElementById('clientName');
+    const clientPhone = document.getElementById('clientPhone');
     const clientId = document.getElementById('clientId');
+    const clientAvatarCard = document.getElementById('clientAvatarCard');
+    const avatarPlaceholder = document.getElementById('avatarPlaceholder');
+
+    // Upload foto
+    const uploadFotoInput = document.getElementById('uploadFotoPerfil');
+    const btnRemoverFoto = document.getElementById('btnRemoverFoto');
 
     // Sair
     const menuLogout = document.getElementById('menuLogout');
@@ -2662,6 +2838,31 @@
 
     sliderValor.addEventListener('input', atualizarCalculadora);
 
+    // ========== GESTÃO DE DADOS DO CLIENTE ==========
+    function obterDadosCliente(telefone) {
+      const users = JSON.parse(localStorage.getItem('sentinel_users') || '[]');
+      const user = users.find(u => u.phone === telefone);
+      if (!user) return null;
+      // Inicializar campos extras se não existirem
+      if (!user.saldo) user.saldo = 0;
+      if (!user.capitalInvestido) user.capitalInvestido = 0;
+      if (!user.lucro) user.lucro = 0;
+      if (!user.ativos) user.ativos = 0;
+      if (!user.historico) user.historico = [];
+      if (!user.fotoPerfil) user.fotoPerfil = null;
+      if (!user.dataCriacao) user.dataCriacao = new Date().toLocaleDateString('pt-PT');
+      return user;
+    }
+
+    function salvarDadosCliente(telefone, dados) {
+      const users = JSON.parse(localStorage.getItem('sentinel_users') || '[]');
+      const idx = users.findIndex(u => u.phone === telefone);
+      if (idx !== -1) {
+        users[idx] = { ...users[idx], ...dados };
+        localStorage.setItem('sentinel_users', JSON.stringify(users));
+      }
+    }
+
     // ========== REGISTO ==========
     function showRegister() {
       loginBox.style.display = 'none';
@@ -2705,7 +2906,20 @@
         alert('Este número de telefone já está registado.');
         return;
       }
-      users.push({ name: nome, phone: telefone, password: regPassword.value || '' });
+      // Criar cliente com dados iniciais
+      const novoUser = {
+        name: nome,
+        phone: telefone,
+        password: regPassword.value || '',
+        saldo: 0,
+        capitalInvestido: 0,
+        lucro: 0,
+        ativos: 0,
+        historico: [],
+        fotoPerfil: null,
+        dataCriacao: new Date().toLocaleDateString('pt-PT')
+      };
+      users.push(novoUser);
       localStorage.setItem('sentinel_users', JSON.stringify(users));
       
       registerForm.style.display = 'none';
@@ -2764,20 +2978,61 @@
           loadingOverlay.classList.remove('active');
           loginScreen.classList.add('hidden');
           dashboard.classList.add('active');
-          const nome = user.name;
-          const telefone = user.phone;
-          // Atualizar perfil
+          
+          // Carregar dados do cliente
+          const dados = obterDadosCliente(user.phone);
+          if (!dados) return;
+          
+          // Atualizar variáveis globais
+          window._saldo = dados.saldo || 0;
+          window._capitalInvestido = dados.capitalInvestido || 0;
+          window._lucro = dados.lucro || 0;
+          window._ativos = dados.ativos || 0;
+          window._historico = dados.historico || [];
+          window._fotoPerfil = dados.fotoPerfil || null;
+
+          const nome = dados.name;
+          const telefone = dados.phone;
           const firstName = nome.split(' ')[0] || nome;
+          
+          // Atualizar perfil
           profileName.textContent = nome;
           const clientIdStr = 'Cliente #' + telefone.replace(/\D/g, '').slice(0,6);
           profileClientId.textContent = clientIdStr;
           profilePhone.textContent = telefone;
-          profileAvatar.textContent = nome.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+          // Avatar
+          const iniciais = nome.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+          profileAvatarPlaceholder.textContent = iniciais;
+          if (window._fotoPerfil) {
+            const img = document.createElement('img');
+            img.src = window._fotoPerfil;
+            profileAvatar.innerHTML = '';
+            profileAvatar.appendChild(img);
+          } else {
+            profileAvatar.innerHTML = '';
+            profileAvatar.appendChild(profileAvatarPlaceholder);
+          }
           menuUser.textContent = nome;
-          // Atualizar cartão (apenas primeiro nome na saudação)
-          greetingText.textContent = 'Olá, ' + firstName + '!';
+          
+          // Atualizar cartão
+          greetingText.textContent = 'Olá, ' + firstName + '! 👋';
           clientName.textContent = nome;
+          clientPhone.textContent = telefone;
           clientId.textContent = clientIdStr;
+          // Avatar no cartão
+          if (window._fotoPerfil) {
+            const img = document.createElement('img');
+            img.src = window._fotoPerfil;
+            clientAvatarCard.innerHTML = '';
+            clientAvatarCard.appendChild(img);
+          } else {
+            clientAvatarCard.innerHTML = '';
+            const span = document.createElement('span');
+            span.id = 'avatarPlaceholder';
+            span.textContent = iniciais;
+            clientAvatarCard.appendChild(span);
+          }
+          
           // Atualizar nível
           updateLevel();
           playSound('login');
@@ -2969,12 +3224,13 @@
       navegarPara('pageProfile');
     });
 
-    // ========== DADOS MOCK ==========
-    let saldo = 12500;
-    let capitalInvestido = 8700;
-    let lucro = 3200;
-    let ativos = 4;
-    let notificacaoCount = 3;
+    // ========== DADOS DO SISTEMA (gráficos) ==========
+    // Faixa: 13.000 - 56.000 MZN
+    const DADOS_SISTEMA = {
+      saldo: [13000, 18000, 22000, 30000, 42000, 56000],
+      invest: [10000, 15000, 20000, 28000, 38000, 52000],
+      lucro: [3000, 5000, 8000, 12000, 18000, 25000]
+    };
 
     // ========== DASHBOARD ==========
     function initDashboardData() {
@@ -2982,8 +3238,13 @@
     }
 
     function updateDashboardUI() {
+      const saldo = window._saldo || 0;
+      const capital = window._capitalInvestido || 0;
+      const lucro = window._lucro || 0;
+      const ativos = window._ativos || 0;
+      
       animateNumber('dashSaldo', saldo, ' MZN');
-      animateNumber('dashCapital', capitalInvestido, ' MZN');
+      animateNumber('dashCapital', capital, ' MZN');
       animateNumber('dashLucro', lucro, ' MZN');
       document.getElementById('dashAtivos').textContent = ativos;
     }
@@ -3004,16 +3265,18 @@
 
     // ========== GRÁFICOS ==========
     let chartSaldo, chartStatsSaldo, chartStatsInvest, chartStatsLucro, chartRealtime;
+    let chartRealtimeData = [];
 
     function initCharts() {
+      // Gráfico de evolução do saldo (sistema)
       const ctxSaldo = document.getElementById('chartSaldo').getContext('2d');
       chartSaldo = new Chart(ctxSaldo, {
         type: 'line',
         data: {
           labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
           datasets: [{
-            label: 'Saldo',
-            data: [8000, 9500, 10200, 11800, 12500, 14000],
+            label: 'Saldo (sistema)',
+            data: DADOS_SISTEMA.saldo,
             borderColor: '#b31b1b',
             backgroundColor: 'rgba(179,27,27,0.1)',
             fill: true,
@@ -3029,14 +3292,15 @@
         }
       });
 
+      // Estatísticas
       const ctxStatsSaldo = document.getElementById('chartStatsSaldo').getContext('2d');
       chartStatsSaldo = new Chart(ctxStatsSaldo, {
         type: 'line',
         data: {
           labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
           datasets: [{
-            label: 'Saldo',
-            data: [8000, 9500, 10200, 11800, 12500, 14000],
+            label: 'Saldo (sistema)',
+            data: DADOS_SISTEMA.saldo,
             borderColor: '#b31b1b',
             backgroundColor: 'rgba(179,27,27,0.1)',
             fill: true,
@@ -3052,8 +3316,8 @@
         data: {
           labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
           datasets: [{
-            label: 'Investimentos',
-            data: [3000, 4500, 5000, 6200, 7800, 8700],
+            label: 'Investimentos (sistema)',
+            data: DADOS_SISTEMA.invest,
             backgroundColor: 'rgba(179,27,27,0.7)',
             borderRadius: 4
           }]
@@ -3067,8 +3331,8 @@
         data: {
           labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
           datasets: [{
-            label: 'Lucro',
-            data: [500, 800, 1200, 1800, 2500, 3200],
+            label: 'Lucro (sistema)',
+            data: DADOS_SISTEMA.lucro,
             borderColor: '#4caf50',
             backgroundColor: 'rgba(76,175,80,0.1)',
             fill: true,
@@ -3078,15 +3342,17 @@
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#aaa' } } }, scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' } }, y: { grid: { color: 'rgba(255,255,255,0.05)' } } } }
       });
 
-      // Gráfico em tempo real
+      // Gráfico em tempo real (sistema)
       const ctxRealtime = document.getElementById('chartRealtime').getContext('2d');
+      // Inicializar com valores na faixa 13.000-56.000
+      chartRealtimeData = Array.from({length: 20}, () => Math.floor(Math.random() * (56000 - 13000 + 1)) + 13000);
       chartRealtime = new Chart(ctxRealtime, {
         type: 'line',
         data: {
           labels: Array.from({length: 20}, (_,i) => i+1),
           datasets: [{
             label: 'Movimentação (MZN)',
-            data: Array.from({length: 20}, () => Math.floor(Math.random() * 3000 + 1000)),
+            data: chartRealtimeData,
             borderColor: '#b31b1b',
             backgroundColor: 'rgba(179,27,27,0.08)',
             fill: true,
@@ -3111,16 +3377,24 @@
       });
     }
 
-    // ========== GRÁFICO EM TEMPO REAL ==========
+    // ========== GRÁFICO EM TEMPO REAL (atualização 5-7 min) ==========
     function iniciarGraficoRealtime() {
       if (window._chartInterval) clearInterval(window._chartInterval);
+      // Intervalo entre 5 e 7 minutos (300000 - 420000 ms)
+      const intervalo = 300000 + Math.random() * 120000;
       window._chartInterval = setInterval(() => {
         if (!chartRealtime || !document.getElementById('pageDashboard').classList.contains('active')) return;
-        const newData = chartRealtime.data.datasets[0].data;
-        newData.shift();
-        newData.push(Math.floor(Math.random() * 3000 + 1000));
+        // Gerar novo valor com incremento suave entre 5000 e 10000
+        const lastValue = chartRealtimeData[chartRealtimeData.length - 1];
+        let delta = 5000 + Math.random() * 5000;
+        if (Math.random() > 0.5) delta = -delta;
+        let newValue = lastValue + delta;
+        // Garantir que fique dentro da faixa 13000-56000
+        newValue = Math.min(56000, Math.max(13000, newValue));
+        chartRealtimeData.shift();
+        chartRealtimeData.push(Math.round(newValue));
         chartRealtime.update('none');
-      }, 3000);
+      }, intervalo);
     }
 
     // ========== UTILIZADORES ONLINE ==========
@@ -3158,7 +3432,7 @@
     }
 
     function agendarNotificacao() {
-      const delay = 8000 + Math.random() * 12000; // entre 8 e 20 segundos
+      const delay = 8000 + Math.random() * 12000;
       window._notifInterval = setTimeout(() => {
         if (!dashboard.classList.contains('active')) {
           agendarNotificacao();
@@ -3172,8 +3446,8 @@
         mostrarToast(msg, tipo);
         playSound('notif');
         // Incrementar badge
-        notificacaoCount++;
-        notifBadge.textContent = notificacaoCount;
+        const currentBadge = parseInt(notifBadge.textContent) || 0;
+        notifBadge.textContent = currentBadge + 1;
         agendarNotificacao();
       }, delay);
     }
@@ -3213,7 +3487,7 @@
     function iniciarBarraEstado() {
       atualizarStatus();
       if (window._statusInterval) clearInterval(window._statusInterval);
-      window._statusInterval = setInterval(atualizarStatus, 60000); // a cada minuto
+      window._statusInterval = setInterval(atualizarStatus, 60000);
     }
 
     function atualizarStatus() {
@@ -3239,36 +3513,51 @@
     // ========== HISTÓRICO ==========
     function initHistory() {
       const container = document.getElementById('historyContainer');
-      const items = [
-        { amount: 3000, date: '02/08/2026', time: '14:30', method: 'Transferência', status: 'Concluído', result: '+4500' },
-        { amount: 1500, date: '01/08/2026', time: '09:15', method: 'MB Way', status: 'Pendente', result: '—' },
-        { amount: 5000, date: '30/07/2026', time: '18:45', method: 'Transferência', status: 'Concluído', result: '+7500' },
-        { amount: 2000, date: '28/07/2026', time: '11:20', method: 'MB Way', status: 'Falhou', result: '—' },
-        { amount: 1000, date: '25/07/2026', time: '16:00', method: 'Transferência', status: 'Concluído', result: '+1500' }
-      ];
-      container.innerHTML = items.map(item => `
+      const historico = window._historico || [];
+      
+      if (historico.length === 0) {
+        container.innerHTML = `
+          <div class="history-empty">
+            <i class="fas fa-clock"></i>
+            Ainda não há histórico de investimentos.
+          </div>
+        `;
+        return;
+      }
+      
+      container.innerHTML = historico.map(item => `
         <div class="history-item">
           <div class="left">
             <span class="amount">${item.amount} MZN</span>
-            <span class="meta">${item.date} · ${item.time} · ${item.method}</span>
+            <span class="meta">${item.date || ''} · ${item.time || ''} · ${item.method || ''}</span>
           </div>
-          <div class="status ${item.status.toLowerCase()}">${item.status} ${item.result !== '—' ? '· '+item.result : ''}</div>
+          <div class="status ${(item.status || 'concluído').toLowerCase()}">${item.status || 'Concluído'} ${item.result ? '· '+item.result : ''}</div>
         </div>
       `).join('');
     }
 
     // ========== CARTEIRA ==========
     function initWallet() {
+      const saldo = window._saldo || 0;
+      const capital = window._capitalInvestido || 0;
       document.getElementById('walletSaldo').textContent = saldo.toLocaleString() + ' MZN';
-      document.getElementById('walletInvest').textContent = capitalInvestido.toLocaleString() + ' MZN';
-      document.getElementById('walletDepositos').textContent = '14500 MZN';
-      document.getElementById('walletLevantamentos').textContent = '2000 MZN';
+      document.getElementById('walletInvest').textContent = capital.toLocaleString() + ' MZN';
+      document.getElementById('walletDepositos').textContent = '0 MZN';
+      document.getElementById('walletLevantamentos').textContent = '0 MZN';
       const history = document.getElementById('walletHistory');
-      history.innerHTML = `
-        <div class="history-item"><div class="left"><span class="amount">+5.000 MZN</span><span class="meta">Depósito · 02/08/2026</span></div><div class="status">Concluído</div></div>
-        <div class="history-item"><div class="left"><span class="amount">-1.200 MZN</span><span class="meta">Levantamento · 01/08/2026</span></div><div class="status">Concluído</div></div>
-        <div class="history-item"><div class="left"><span class="amount">+3.000 MZN</span><span class="meta">Retorno · 30/07/2026</span></div><div class="status">Concluído</div></div>
-      `;
+      const historico = window._historico || [];
+      if (historico.length === 0) {
+        history.innerHTML = `
+          <div class="history-empty" style="border:none;padding:1rem 0;">
+            <i class="fas fa-wallet"></i>
+            Nenhuma movimentação registada.
+          </div>
+        `;
+      } else {
+        history.innerHTML = historico.slice(0,5).map(item => `
+          <div class="history-item"><div class="left"><span class="amount">${item.amount} MZN</span><span class="meta">${item.date || ''} · ${item.method || ''}</span></div><div class="status ${(item.status || 'concluído').toLowerCase()}">${item.status || 'Concluído'}</div></div>
+        `).join('');
+      }
     }
 
     // ========== NOTIFICAÇÕES (página) ==========
@@ -3287,17 +3576,18 @@
           <div class="time">${n.time}</div>
         </div>
       `).join('');
-      notifBadge.textContent = notifs.length + notificacaoCount;
+      notifBadge.textContent = notifs.length + (parseInt(notifBadge.textContent) || 0);
     }
 
     // ========== FEED ==========
     function initFeed() {
       const container = document.getElementById('feedContainer');
       const feed = [
-        { user: 'João', action: 'iniciou um investimento de 3.000 MZN', time: 'há 10 min' },
-        { user: 'Maria', action: 'concluiu um investimento com lucro de 2.500 MZN', time: 'há 30 min' },
+        { user: 'João', action: 'iniciou um investimento de 5.000 MZN', time: 'há 10 min' },
+        { user: 'Maria', action: 'concluiu um investimento com lucro de 3.200 MZN', time: 'há 30 min' },
         { user: 'Carlos', action: 'registou-se na plataforma', time: 'há 1 hora' },
-        { user: 'Ana', action: 'atualizou o perfil', time: 'há 2 horas' }
+        { user: 'Ana', action: 'atualizou o perfil', time: 'há 2 horas' },
+        { user: 'Eusébio', action: 'investiu 8.000 MZN no Aviator', time: 'há 3 horas' }
       ];
       container.innerHTML = feed.map(item => `
         <div class="feed-item">
@@ -3318,10 +3608,63 @@
     }
 
     function updateLevel() {
-      const level = getLevel(capitalInvestido);
+      const capital = window._capitalInvestido || 0;
+      const level = getLevel(capital);
       profileLevel.innerHTML = `<i class="fas fa-star"></i> ${level.name}`;
       profileLevelDetail.textContent = level.emoji + ' ' + level.name;
     }
+
+    // ========== FOTO DE PERFIL ==========
+    function atualizarFotoPerfil(dataUrl) {
+      window._fotoPerfil = dataUrl;
+      const userPhone = profilePhone.textContent;
+      if (userPhone && userPhone !== '—') {
+        salvarDadosCliente(userPhone, { fotoPerfil: dataUrl });
+      }
+      // Atualizar UI
+      const iniciais = profileName.textContent.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+      if (dataUrl) {
+        const img = document.createElement('img');
+        img.src = dataUrl;
+        profileAvatar.innerHTML = '';
+        profileAvatar.appendChild(img);
+        const imgCard = document.createElement('img');
+        imgCard.src = dataUrl;
+        clientAvatarCard.innerHTML = '';
+        clientAvatarCard.appendChild(imgCard);
+      } else {
+        profileAvatar.innerHTML = '';
+        const span = document.createElement('span');
+        span.textContent = iniciais;
+        profileAvatar.appendChild(span);
+        clientAvatarCard.innerHTML = '';
+        const spanCard = document.createElement('span');
+        spanCard.textContent = iniciais;
+        clientAvatarCard.appendChild(spanCard);
+      }
+    }
+
+    uploadFotoInput.addEventListener('change', function(e) {
+      const file = this.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        const dataUrl = ev.target.result;
+        atualizarFotoPerfil(dataUrl);
+        playSound('confirm');
+        mostrarToast('Foto de perfil atualizada com sucesso!', 'deposito');
+      };
+      reader.readAsDataURL(file);
+      this.value = ''; // permitir re-upload
+    });
+
+    btnRemoverFoto.addEventListener('click', function() {
+      if (confirm('Deseja remover a foto de perfil?')) {
+        atualizarFotoPerfil(null);
+        playSound('notif');
+        mostrarToast('Foto de perfil removida.', 'info');
+      }
+    });
 
     // ========== FAQ ==========
     document.querySelectorAll('.faq-item .question').forEach(q => {
@@ -3338,24 +3681,23 @@
     });
 
     // ========== AVALIAÇÕES DOS CLIENTES ==========
-    const fotosPerfil = [
-      '👨‍💼', '👩‍💼', '👨‍🔧', '👩‍🔬', '👨‍🏫', '👩‍🌾', '👨‍🎓', '👩‍💻', '👨‍⚖️', '👩‍✈️',
-      '🧑‍💼', '🧑‍🔧', '🧑‍🏫', '🧑‍🌾', '🧑‍🎓', '🧑‍💻', '🧑‍⚖️'
-    ];
-
     const provinciasMocambique = [
       'Maputo', 'Maputo Província', 'Gaza', 'Inhambane', 'Manica', 'Sofala',
       'Tete', 'Zambézia', 'Nampula', 'Cabo Delgado', 'Niassa', 'Beira', 'Matola'
     ];
 
+    // Comentários em português moçambicano
     const comentariosMock = [
-      { nome: 'Eusébio dos Santos', provincia: 'Maputo', comentario: 'Plataforma excelente! Já consegui bons retornos com o Aviator. Recomendo a todos que querem investir com segurança.', likes: 56 },
+      { nome: 'Eusébio dos Santos', provincia: 'Maputo', comentario: 'Plataforma top! Já consegui bons retornos com o Aviator. Recomendo a todos que querem investir com segurança.', likes: 56 },
       { nome: 'Maria da Luz', provincia: 'Nampula', comentario: 'A SENTINELA mudou a minha vida financeira. Recebo os meus rendimentos sempre a tempo. Muito obrigada!', likes: 31 },
       { nome: 'Carlos Macie', provincia: 'Beira', comentario: 'Interface intuitiva e suporte rápido. O sistema de simulação ajuda a tomar decisões acertadas.', likes: 74 },
       { nome: 'Ana Raquel', provincia: 'Manica', comentario: 'Sou cliente há 3 meses e já obtive lucros significativos. Plataforma de confiança!', likes: 18 },
       { nome: 'João Sitoe', provincia: 'Gaza', comentario: 'O Trader é fantástico. As análises são precisas. Já recomendei a vários amigos.', likes: 42 },
       { nome: 'Helena Maposse', provincia: 'Tete', comentario: 'A SENTINELA oferece uma experiência premium. O suporte é atencioso e os pagamentos são rápidos.', likes: 27 },
-      { nome: 'Fernando Muianga', provincia: 'Inhambane', comentario: 'Comecei com pouco e já tenho um bom capital. A plataforma é segura e fácil de usar.', likes: 63 }
+      { nome: 'Fernando Muianga', provincia: 'Inhambane', comentario: 'Comecei com pouco e já tenho um bom capital. A plataforma é segura e fácil de usar.', likes: 63 },
+      { nome: 'Gilda Mário', provincia: 'Sofala', comentario: 'Estou muito satisfeita com os resultados. A SENTINELA é a melhor plataforma que já usei.', likes: 45 },
+      { nome: 'Abrão Nhampossa', provincia: 'Zambézia', comentario: 'Atendimento de primeira! Sempre que precisei, fui bem atendido. A plataforma é muito boa.', likes: 32 },
+      { nome: 'Cecília Jaime', provincia: 'Niassa', comentario: 'Recomendo a todos. Já fiz vários investimentos e todos deram retorno. Confio na SENTINELA.', likes: 39 }
     ];
 
     let reviews = [];
@@ -3370,17 +3712,26 @@
         }
       }
       if (!reviews || reviews.length === 0) {
-        reviews = comentariosMock.map((c, i) => ({
-          id: Date.now() + i,
-          nome: c.nome,
-          provincia: c.provincia,
-          comentario: c.comentario,
-          likes: c.likes,
-          timestamp: Date.now() - i * 86400000
-        }));
+        // Gerar com datas do mês corrente
+        const hoje = new Date();
+        const mes = hoje.getMonth();
+        const ano = hoje.getFullYear();
+        reviews = comentariosMock.map((c, i) => {
+          const dia = Math.max(1, hoje.getDate() - i * 2 - Math.floor(Math.random() * 3));
+          const data = new Date(ano, mes, dia);
+          return {
+            id: Date.now() + i,
+            nome: c.nome,
+            provincia: c.provincia,
+            comentario: c.comentario,
+            likes: c.likes,
+            timestamp: data.getTime()
+          };
+        });
         localStorage.setItem('sentinel_reviews', JSON.stringify(reviews));
       }
       renderReviews();
+      renderReviewsDash();
       iniciarLikeAuto();
     }
 
@@ -3411,7 +3762,6 @@
         `;
       }).join('');
 
-      // Eventos de like
       document.querySelectorAll('.like-btn').forEach(btn => {
         btn.addEventListener('click', function() {
           const id = parseInt(this.dataset.id);
@@ -3420,9 +3770,36 @@
             review.likes += 1;
             localStorage.setItem('sentinel_reviews', JSON.stringify(reviews));
             renderReviews();
+            renderReviewsDash();
           }
         });
       });
+    }
+
+    function renderReviewsDash() {
+      const container = document.getElementById('reviewsDashContainer');
+      if (!container) return;
+      // Mostrar as 3 mais recentes (ou aleatórias)
+      const sorted = [...reviews].sort((a,b) => b.timestamp - a.timestamp);
+      const recentes = sorted.slice(0, 3);
+      if (recentes.length === 0) {
+        container.innerHTML = '<p style="color:#888;font-size:0.9rem;">Ainda não há avaliações.</p>';
+        return;
+      }
+      container.innerHTML = recentes.map(r => {
+        const avatar = r.nome.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+        const timeAgo = tempoRelativo(r.timestamp);
+        return `
+          <div class="reviews-dash-item">
+            <div class="avatar">${avatar}</div>
+            <div class="content">
+              <div class="name">${r.nome}</div>
+              <div class="text">${r.comentario}</div>
+              <div class="meta">${timeAgo} · ${r.provincia}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
     }
 
     function tempoRelativo(timestamp) {
@@ -3448,6 +3825,7 @@
         review.likes += 1;
         localStorage.setItem('sentinel_reviews', JSON.stringify(reviews));
         renderReviews();
+        renderReviewsDash();
       }, 20000 + Math.random() * 30000);
     }
 
@@ -3471,11 +3849,17 @@
       reviews.unshift(newReview);
       localStorage.setItem('sentinel_reviews', JSON.stringify(reviews));
       renderReviews();
+      renderReviewsDash();
       document.getElementById('reviewName').value = '';
       document.getElementById('reviewProvince').value = '';
       document.getElementById('reviewComment').value = '';
       playSound('confirm');
       mostrarToast('A sua avaliação foi publicada com sucesso! Obrigado.', 'deposito');
+    });
+
+    // ========== VER TODAS AS AVALIAÇÕES ==========
+    document.getElementById('verTodasReviewsDash').addEventListener('click', function() {
+      navegarPara('pageReviews');
     });
 
     // ========== INICIALIZAÇÃO ==========
