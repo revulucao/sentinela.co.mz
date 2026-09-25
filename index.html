@@ -375,6 +375,63 @@
       animation: pulseText 2.5s ease-in-out infinite;
     }
 
+    /* ===== BOTÕES DE AÇÃO (NOVOS) ===== */
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+      margin-bottom: 1.5rem;
+      animation: fadeSlide 0.6s 0.35s both;
+    }
+
+    .btn-payment {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      padding: 1.2rem 2rem;
+      background: linear-gradient(135deg, #92400e, #d97706, #f59e0b);
+      background-size: 200% 200%;
+      border: none;
+      border-radius: 60px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: white;
+      letter-spacing: 1.5px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
+      box-shadow: 0 15px 35px -8px #92400e, 0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+      position: relative;
+      overflow: hidden;
+      text-transform: uppercase;
+      animation: gradientShift 4s ease infinite;
+    }
+
+    .btn-payment::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+      transition: left 0.7s ease;
+    }
+
+    .btn-payment:hover {
+      transform: translateY(-3px) scale(1.01);
+      box-shadow: 0 25px 45px -10px #d97706, 0 0 35px rgba(245, 158, 11, 0.5);
+    }
+
+    .btn-payment:hover::after {
+      left: 100%;
+    }
+
+    .btn-payment:active {
+      transform: translateY(0) scale(0.99);
+    }
+
     .btn-whatsapp {
       display: inline-flex;
       align-items: center;
@@ -525,6 +582,7 @@
       .main-subgreeting { font-size: 1rem; }
       .main-description { padding: 1.5rem 1.2rem; font-size: 0.98rem; }
       .main-description .highlight { font-size: 1.05rem; }
+      .btn-payment { padding: 1.1rem 1.8rem; font-size: 1rem; }
       .btn-whatsapp { padding: 1.1rem 1.8rem; font-size: 1.05rem; }
       .voice-float { width: 52px; height: 52px; font-size: 1.5rem; top: 1.2rem; right: 1.2rem; }
     }
@@ -532,7 +590,7 @@
     @media (max-width: 380px) {
       .brand-name { font-size: 1.8rem; }
       .main-greeting { font-size: 1.4rem; }
-      .btn-primary, .btn-whatsapp { font-size: 0.95rem; padding: 1rem 1.5rem; }
+      .btn-primary, .btn-payment, .btn-whatsapp { font-size: 0.95rem; padding: 1rem 1.5rem; }
     }
 
     /* Esconde elementos durante processamento */
@@ -590,13 +648,19 @@
       <p class="main-subgreeting" id="subGreeting">Seja bem-vindo mais uma vez à SENTINELA.</p>
 
       <div class="main-description">
-        A partir de agora, a SENTINELA estará ao seu lado nesta nova jornada. Queremos ajudar-te a deixar para trás hábitos que já não representam a pessoa que desejas ser e começar uma nova fase da tua vida.
+        A partir de agora, a SENTINELA estará ao seu lado nesta nova jornada. Queremos ajudar-te a deixar para trás hábitos que já não representam a pessoa que desejas ser e começar uma nova fase da tua vida. Além de ajudar-te a deixar o vício, iremos ensinar-te de forma detalhada como o algoritmo do AVIATOR funciona, para que compreendas como o jogo funciona e não sejas mais manipulado.
         <span class="highlight">Está na hora de te despedires do teu antigo EU.</span>
       </div>
 
-      <button class="btn-whatsapp" id="btnWhatsapp">
-        <span aria-hidden="true">🛡️</span> OBTER ATENDIMENTO
-      </button>
+      <!-- NOVOS BOTÕES DE AÇÃO -->
+      <div class="action-buttons">
+        <button class="btn-payment" id="btnPayment">
+          <span aria-hidden="true">💳</span> EFETUAR PAGAMENTO — 699 MZN
+        </button>
+        <button class="btn-whatsapp" id="btnWhatsapp">
+          <span aria-hidden="true">🛡️</span> ENVIAR COMPROVATIVO DE PAGAMENTO
+        </button>
+      </div>
 
       <div class="footer-note">SENTINELA · PROTEÇÃO E CONFIANÇA</div>
     </div>
@@ -631,6 +695,7 @@
     const welcomeMessage = document.getElementById('welcomeMessage');
     const voiceBtn = document.getElementById('voiceBtn');
     const btnWhatsapp = document.getElementById('btnWhatsapp');
+    const btnPayment = document.getElementById('btnPayment');
 
     // ===== ESTADO =====
     let userName = '';
@@ -644,6 +709,9 @@
     // ===== WHATSAPP =====
     const WHATSAPP_NUMBER = '258877426441';
     const WHATSAPP_MESSAGE = 'Olá, já efetuei meu pagamento e estou para mandar a foto do comprovativo de pagamento.';
+
+    // ===== CHECKOUT =====
+    const CHECKOUT_URL = 'https://checkout.escalepay.com/3632205';
 
     // ===== FUNÇÕES DE NAVEGAÇÃO =====
     function showView(viewId) {
@@ -675,14 +743,11 @@
     function startProcessing() {
       showView('viewProcessing');
 
-      // Limpa timeout anterior se existir
       if (processingTimeout) clearTimeout(processingTimeout);
 
       processingTimeout = setTimeout(() => {
-        // Mostra notificação de boas-vindas
         showWelcomeToast();
 
-        // Após um pequeno delay, vai para tela principal
         setTimeout(() => {
           goToMainScreen();
         }, 1400);
@@ -693,10 +758,8 @@
       welcomeMessage.textContent = `Bem-vindo à plataforma SENTINELA, ${userName}.`;
       welcomeToast.classList.add('show');
 
-      // Toca um som suave de notificação (opcional, via Web Audio API)
       playNotificationSound();
 
-      // Remove toast após 4 segundos
       if (toastTimeout) clearTimeout(toastTimeout);
       toastTimeout = setTimeout(() => {
         welcomeToast.classList.remove('show');
@@ -707,11 +770,9 @@
     function goToMainScreen() {
       showView('viewMain');
 
-      // Personaliza saudação
       greetingText.textContent = `Olá, ${userName} 👋`;
       subGreeting.textContent = 'Seja bem-vindo mais uma vez à SENTINELA.';
 
-      // Armazena nome na sessão (apenas para personalização)
       try {
         sessionStorage.setItem('sentinela_userName', userName);
         sessionStorage.setItem('sentinela_userPhone', userPhone);
@@ -719,8 +780,12 @@
         // Silencioso
       }
 
-      // Ativa botão de voz
       voiceBtn.style.display = 'flex';
+    }
+
+    // ===== CHECKOUT =====
+    function openCheckout() {
+      window.open(CHECKOUT_URL, '_blank', 'noopener,noreferrer');
     }
 
     // ===== WHATSAPP =====
@@ -737,15 +802,13 @@
         return;
       }
 
-      // Se já está falando, para
       if (isSpeaking) {
         stopSpeaking();
         return;
       }
 
-      const message = `Saudações, ${userName}. Seja bem-vindo à SENTINELA. Para ter acesso ao atendimento, clica no botão Obter Atendimento. O site irá levar-te diretamente para o WhatsApp, onde irás enviar o comprovativo do teu pagamento.`;
+      const message = `Saudações, ${userName}. Seja bem-vindo à SENTINELA. Para ter acesso ao atendimento, clica no botão Enviar Comprovativo de Pagamento. O site irá levar-te diretamente para o WhatsApp, onde irás enviar o comprovativo do teu pagamento.`;
 
-      // Cancela qualquer fala anterior
       synth.cancel();
 
       const utterance = new SpeechSynthesisUtterance(message);
@@ -754,7 +817,6 @@
       utterance.pitch = 1.05;
       utterance.volume = 1;
 
-      // Tenta selecionar uma voz em português
       const voices = synth.getVoices();
       const ptVoice = voices.find(v => v.lang.startsWith('pt')) || voices.find(v => v.lang.includes('pt'));
       if (ptVoice) utterance.voice = ptVoice;
@@ -775,7 +837,6 @@
       };
 
       utterance.onerror = (e) => {
-        // Silencioso, mas restaura o botão
         isSpeaking = false;
         voiceBtn.classList.remove('speaking');
         voiceBtn.textContent = '🔊';
@@ -833,6 +894,10 @@
       openWhatsApp();
     });
 
+    btnPayment.addEventListener('click', () => {
+      openCheckout();
+    });
+
     voiceBtn.addEventListener('click', () => {
       if (!isSpeaking) {
         speakWelcome();
@@ -843,21 +908,17 @@
 
     // ===== CARREGAMENTO INICIAL =====
     window.addEventListener('DOMContentLoaded', () => {
-      // Esconde botão de voz na tela de login
       voiceBtn.style.display = 'none';
 
-      // Se houver nome na sessão, restaura (apenas para conveniência)
       try {
         const savedName = sessionStorage.getItem('sentinela_userName');
         if (savedName) {
-          // Não pula a tela de login, mas preenche o campo
           fullNameInput.value = savedName;
         }
       } catch (e) {
         // Silencioso
       }
 
-      // Pré-carrega vozes (alguns navegadores exigem interação)
       if ('speechSynthesis' in window) {
         synth.getVoices();
       }
