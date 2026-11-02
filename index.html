@@ -793,6 +793,266 @@
       outline: 2px solid var(--primary-glow);
       outline-offset: 3px;
     }
+
+
+    /* ===== REDESIGN 3D GLOBAL + CENTRALIZAÇÃO ===== */
+    body {
+      perspective: 1400px;
+      perspective-origin: 50% 45%;
+    }
+
+    .app-container {
+      width: min(100%, 760px);
+      align-items: center;
+      transform-style: preserve-3d;
+    }
+
+    .view,
+    .view.active {
+      width: 100%;
+      text-align: center;
+      transform-style: preserve-3d;
+    }
+
+    .glass-card {
+      text-align: center;
+      isolation: isolate;
+      transform: translateZ(0) rotateX(1deg);
+      transform-style: preserve-3d;
+      border: 1px solid rgba(117, 164, 255, 0.32);
+      background:
+        linear-gradient(145deg, rgba(27, 44, 76, 0.94), rgba(7, 13, 27, 0.97) 58%, rgba(20, 19, 48, 0.94));
+      box-shadow:
+        0 34px 70px rgba(0, 0, 0, 0.72),
+        0 18px 30px rgba(0, 0, 0, 0.42),
+        0 0 0 1px rgba(255,255,255,0.07) inset,
+        0 0 45px rgba(43, 110, 255, 0.22),
+        0 8px 0 rgba(5, 10, 20, 0.9);
+    }
+
+    .glass-card::before {
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.8;
+      filter: blur(1px);
+    }
+
+    .glass-card > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand-header {
+      justify-content: center;
+      text-align: center;
+    }
+
+    .brand-icon {
+      transform: translateZ(28px);
+      filter: drop-shadow(0 8px 0 rgba(5, 12, 30, 0.9))
+              drop-shadow(0 0 18px rgba(43, 110, 255, 0.85));
+    }
+
+    .brand-name {
+      transform: translateZ(24px);
+      text-shadow: 0 3px 0 rgba(31, 57, 115, 0.9), 0 8px 22px rgba(43, 110, 255, 0.55);
+    }
+
+    .brand-tagline {
+      text-align: center;
+      border-left: 0;
+      border-top: 2px solid var(--gold-accent);
+      border-radius: 12px;
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 560px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    #loginForm {
+      width: 100%;
+      max-width: 560px;
+      margin: 0 auto;
+      text-align: left;
+    }
+
+    .form-group input {
+      border: 1px solid rgba(91, 145, 255, 0.52);
+      box-shadow: 0 7px 0 rgba(3, 8, 20, 0.72), 0 12px 24px rgba(0,0,0,0.22),
+                  inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+
+    .btn-primary,
+    .btn-payment,
+    .btn-whatsapp {
+      transform: translateY(0) translateZ(12px);
+      border: 1px solid rgba(255,255,255,0.24);
+      box-shadow:
+        0 8px 0 rgba(4, 10, 25, 0.8),
+        0 16px 28px rgba(0,0,0,0.38),
+        inset 0 1px 0 rgba(255,255,255,0.28),
+        inset 0 -3px 0 rgba(0,0,0,0.18);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.35);
+    }
+
+    .btn-primary:hover,
+    .btn-payment:hover,
+    .btn-whatsapp:hover {
+      transform: translateY(-3px) translateZ(18px);
+    }
+
+    .btn-primary:active,
+    .btn-payment:active,
+    .btn-whatsapp:active {
+      transform: translateY(5px) translateZ(2px);
+      box-shadow: 0 2px 0 rgba(4, 10, 25, 0.8), 0 6px 12px rgba(0,0,0,0.3);
+    }
+
+    .main-greeting,
+    .main-subgreeting,
+    .main-description,
+    .action-buttons,
+    .footer-note,
+    .processing-container {
+      text-align: center;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .main-description {
+      border: 1px solid rgba(74, 133, 255, 0.35);
+      background: linear-gradient(145deg, rgba(17, 32, 57, 0.95), rgba(5, 12, 25, 0.92));
+      box-shadow: 0 10px 0 rgba(3, 8, 20, 0.72), 0 18px 28px rgba(0,0,0,0.28),
+                  inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    .main-description .highlight {
+      text-align: center;
+    }
+
+    .action-buttons {
+      width: 100%;
+      max-width: 560px;
+    }
+
+    .processing-container {
+      width: 100%;
+    }
+
+    .loader-ring {
+      filter: drop-shadow(0 12px 14px rgba(0,0,0,0.5));
+      transform: translateZ(18px);
+    }
+
+    .voice-float {
+      border: 1px solid rgba(130, 171, 255, 0.65);
+      box-shadow: 0 6px 0 rgba(3, 8, 20, 0.85), 0 14px 26px rgba(0,0,0,0.4),
+                  0 0 24px rgba(43, 110, 255, 0.35), inset 0 1px 0 rgba(255,255,255,0.18);
+    }
+
+    .footer-note {
+      letter-spacing: 1.5px;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        align-items: center;
+        padding: max(0.75rem, env(safe-area-inset-top))
+                 max(0.65rem, env(safe-area-inset-right))
+                 max(0.9rem, env(safe-area-inset-bottom))
+                 max(0.65rem, env(safe-area-inset-left));
+      }
+
+      .app-container {
+        width: 100%;
+        min-height: calc(100dvh - max(1.5rem, env(safe-area-inset-top) + env(safe-area-inset-bottom)));
+        justify-content: center;
+      }
+
+      .glass-card {
+        padding: clamp(1.15rem, 5vw, 1.65rem) clamp(0.9rem, 4.2vw, 1.35rem);
+        border-radius: 22px;
+        transform: none;
+        box-shadow: 0 18px 36px rgba(0,0,0,0.62),
+                    0 7px 0 rgba(4, 9, 20, 0.88),
+                    0 0 28px rgba(43, 110, 255, 0.2),
+                    inset 0 1px 0 rgba(255,255,255,0.1);
+      }
+
+      .brand-header {
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .brand-tagline {
+        width: 100%;
+      }
+
+      .form-group input {
+        min-height: 52px;
+        font-size: 16px;
+      }
+
+      .btn-primary,
+      .btn-payment,
+      .btn-whatsapp {
+        min-height: 54px;
+        padding: 0.95rem 0.85rem;
+        font-size: clamp(0.82rem, 3.4vw, 1rem);
+        letter-spacing: 0.35px;
+        white-space: normal;
+        line-height: 1.35;
+      }
+
+      .main-description {
+        line-height: 1.65;
+        padding: 1rem 0.9rem;
+      }
+
+      .voice-float {
+        top: max(0.65rem, env(safe-area-inset-top));
+        right: max(0.65rem, env(safe-area-inset-right));
+        z-index: 500;
+      }
+
+      .welcome-toast {
+        width: min(92vw, 500px);
+      }
+    }
+
+    @media (max-width: 360px) {
+      .glass-card {
+        padding: 1rem 0.78rem;
+      }
+
+      .brand-name {
+        font-size: 1.42rem;
+      }
+
+      .brand-icon {
+        font-size: 1.75rem;
+      }
+
+      .btn-primary,
+      .btn-payment,
+      .btn-whatsapp {
+        font-size: 0.78rem;
+        padding: 0.85rem 0.65rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -905,7 +1165,7 @@
     let toastTimeout = null;
 
     // ===== WHATSAPP =====
-    const WHATSAPP_NUMBER = '258877426441';
+    const WHATSAPP_NUMBER = '258835722020';
     const WHATSAPP_MESSAGE = 'Olá, já efetuei meu pagamento e estou para mandar a foto do comprovativo de pagamento.';
 
     // ===== CHECKOUT =====
